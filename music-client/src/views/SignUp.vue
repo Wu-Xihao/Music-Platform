@@ -1,15 +1,15 @@
 <template>
   <yin-login-logo></yin-login-logo>
-  <div class="sign">
+  <div class="sign fade-in"> <!-- 添加 fade-in 类 -->
     <div class="sign-head">
       <span>用户注册</span>
     </div>
     <el-form ref="signUpForm" label-width="70px" status-icon :model="registerForm" :rules="SignUpRules">
       <el-form-item prop="username" label="用户名">
-        <el-input v-model="registerForm.username" placeholder="用户名"></el-input>
+        <el-input v-model="registerForm.username" placeholder="用户名" class="scale-in"></el-input>
       </el-form-item>
       <el-form-item prop="password" label="密码">
-        <el-input type="password" placeholder="密码" v-model="registerForm.password"></el-input>
+        <el-input type="password" placeholder="密码" v-model="registerForm.password" class="scale-in"></el-input>
       </el-form-item>
       <el-form-item prop="sex" label="性别">
         <el-radio-group v-model="registerForm.sex">
@@ -19,19 +19,19 @@
         </el-radio-group>
       </el-form-item>
       <el-form-item prop="phoneNum" label="手机">
-        <el-input placeholder="手机" v-model="registerForm.phoneNum"></el-input>
+        <el-input placeholder="手机" v-model="registerForm.phoneNum" class="scale-in"></el-input>
       </el-form-item>
       <el-form-item prop="email" label="邮箱">
-        <el-input v-model="registerForm.email" placeholder="邮箱"></el-input>
+        <el-input v-model="registerForm.email" placeholder="邮箱" class="scale-in"></el-input>
       </el-form-item>
       <el-form-item prop="birth" label="生日">
-        <el-date-picker type="date" placeholder="选择日期" v-model="registerForm.birth" style="width: 100%"></el-date-picker>
+        <el-date-picker type="date" placeholder="选择日期" v-model="registerForm.birth" style="width: 100%" class="scale-in"></el-date-picker>
       </el-form-item>
       <el-form-item prop="introduction" label="签名">
-        <el-input type="textarea" placeholder="签名" v-model="registerForm.introduction"></el-input>
+        <el-input type="textarea" placeholder="签名" v-model="registerForm.introduction" class="scale-in"></el-input>
       </el-form-item>
       <el-form-item prop="location" label="地区">
-        <el-select v-model="registerForm.location" placeholder="地区" style="width: 100%">
+        <el-select v-model="registerForm.location" placeholder="地区" style="width: 100%" class="scale-in">
           <el-option v-for="item in AREA" :key="item.value" :label="item.label" :value="item.value"></el-option>
         </el-select>
       </el-form-item>
@@ -71,7 +71,7 @@ export default defineComponent({
     });
 
     async function goBackRegist() {
-       routerManager(RouterName.SignIn, { path: RouterName.SignIn });
+      routerManager(RouterName.SignIn, { path: RouterName.SignIn });
     }
 
     async function handleSignUp() {
@@ -80,7 +80,6 @@ export default defineComponent({
         if (!valid) return (canRun = false);
       });
       if (!canRun) return;
-
 
       try {
         const username = registerForm.username;
@@ -119,4 +118,63 @@ export default defineComponent({
 
 <style lang="scss" scoped>
 @import "@/assets/css/sign.scss";
+
+/* 定义淡入动画 */
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+/* 定义缩放动画 */
+@keyframes scaleIn {
+  from {
+    transform: scale(0);
+    opacity: 0;
+  }
+  to {
+    transform: scale(1);
+    opacity: 1;
+  }
+}
+
+
+
+/* 添加动画类 */
+.fade-in {
+  animation: fadeIn 1s ease-in-out;
+}
+
+/* 应用缩放动画到输入框 */
+.scale-in {
+  animation: scaleIn 0.5s ease-in-out;
+}
+
+/* 设置所有文字颜色为白色 */
+.sign {
+  color: white;
+}
+
+/* 设置表单标签颜色为白色 */
+.el-form-item__label {
+  color: white;
+}
+
+/* 设置输入框内占位符颜色为白色 */
+.el-input::placeholder {
+  color: white;
+}
+
+/* 设置单选框文字颜色为白色 */
+.el-radio__label {
+  color: white;
+}
+
+/* 设置选择器选项文字颜色为白色 */
+.el-option {
+  color: white;
+}
 </style>
