@@ -43,8 +43,11 @@ body::before {
 .sign {
   padding: 30px 50px;
   border-radius: 10px;
-  background: linear-gradient(to bottom, #c899f4, #04d1c8);
-  box-shadow: 0 0 10px rgba(0, 0, 0, 0.5);
+  // 移除渐变色，改为透明背景+模糊效果
+  background: rgba(9, 9, 9, 0.1);
+  backdrop-filter: blur(10px); // 毛玻璃效果，增强透明感
+  -webkit-backdrop-filter: blur(10px); // 兼容 Safari
+  box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); // 弱化阴影，适配透明背景
 
   .sign-head {
     text-align: center;

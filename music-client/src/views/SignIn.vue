@@ -1,5 +1,7 @@
 <template>
   <div class="signin-container">
+    <!-- 新增左侧图片容器 -->
+    <div class="signin-left-image"></div>
     <div class="signin-background">
       <div class="signin-gradient"></div>
     </div>
@@ -105,26 +107,35 @@ export default defineComponent({
 
 .signin-container {
   display: flex;
-  flex-direction: column;
+  flex-direction: row; // 修改为水平布局
   align-items: center;
   justify-content: center;
-  height: 400vh;
+  height: 100vh;
   position: relative;
   overflow: hidden;
+}
+
+// 新增左侧图片样式
+.signin-left-image {
+  flex: 1; // 占据左侧一半空间
+  background-image: url('./music3.jpg');
+  background-size: cover;
+  background-position: center;
+  height: 100%;
 }
 
 .signin-background {
   position: absolute;
   top: 0;
   left: 0;
-  width: 100%;
-  height: 100%;
+  width: 140%;
+  height: 140%;
   z-index: -1;
 }
 
 .signin-gradient {
-  width: 100%;
-  height: 100%;
+  width: 89%;
+  height: 89%;
   // 使用图片作为背景
   background-image: url('./music.png');
   background-size: cover;
@@ -141,6 +152,8 @@ export default defineComponent({
   box-shadow: 0 0 20px rgba(0, 0, 0, 0.2);
   width: 400px;
   animation: fadeIn 0.5s ease;
+  margin-left: auto; // 使登录框靠右
+  margin-right: 10%; // 适当添加右侧边距
 }
 
 .sign-head {

@@ -6,24 +6,27 @@
     <el-main>
       <!-- 使用 transition 组件添加动画效果 -->
       <transition name="scale-in">
-        <el-form v-if="showForm" @submit.prevent="handleSubmit">
-          <el-form-item label="邮箱：" prop="email">
-            <el-input id="email" v-model="email" type="email" required placeholder="请输入邮箱" />
-            <el-button @click="sendVerificationCode" class="gradient-button">发送验证码</el-button>
-          </el-form-item>
-          <el-form-item label="验证码：" prop="code">
-            <el-input id="code" v-model="code" type="text" required placeholder="请输入验证码" />
-          </el-form-item>
-          <el-form-item label="新密码：" prop="password">
-            <el-input id="password" v-model="password" type="password" required placeholder="请输入新密码" />
-          </el-form-item>
-          <el-form-item label="确认密码：" prop="confirmPassword">
-            <el-input id="confirmPassword" v-model="confirmPassword" type="password" required placeholder="请再次输入新密码" />
-          </el-form-item>
-          <el-form-item>
-            <el-button @click="handleSubmit" type="submit" class="gradient-button">提交</el-button>
-          </el-form-item>
-        </el-form>
+        <div class="image-container">
+          <img src="./music6.jpg" alt="Music Image">
+          <el-form v-if="showForm" @submit.prevent="handleSubmit">
+            <el-form-item label="邮箱：" prop="email">
+              <el-input id="email" v-model="email" type="email" required placeholder="请输入邮箱" />
+              <el-button @click="sendVerificationCode" class="gradient-button">发送验证码</el-button>
+            </el-form-item>
+            <el-form-item label="验证码：" prop="code">
+              <el-input id="code" v-model="code" type="text" required placeholder="请输入验证码" />
+            </el-form-item>
+            <el-form-item label="新密码：" prop="password">
+              <el-input id="password" v-model="password" type="password" required placeholder="请输入新密码" />
+            </el-form-item>
+            <el-form-item label="确认密码：" prop="confirmPassword">
+              <el-input id="confirmPassword" v-model="confirmPassword" type="password" required placeholder="请再次输入新密码" />
+            </el-form-item>
+            <el-form-item>
+              <el-button @click="handleSubmit" type="submit" class="gradient-button">提交</el-button>
+            </el-form-item>
+          </el-form>
+        </div>
       </transition>
     </el-main>
   </el-container>
@@ -95,6 +98,28 @@
     transform: scale(1);
     opacity: 1;
   }
+}
+
+.image-container {
+  position: relative;
+}
+
+.image-container img {
+  width: 100%;
+  height: auto;
+  object-fit: cover;
+}
+
+.image-container el-form {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  background: rgba(0, 0, 0, 0.5); /* 表单背景半透明 */
+  padding: 20px;
+  border-radius: 10px;
+  width: 100%;
+  max-width: 360px; /* 调整表单宽度 */
 }
 </style>
 
