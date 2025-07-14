@@ -1,15 +1,20 @@
 //Colors
 $color-white: #ffffff;
-$color-light-white: #fefefe;
-$color-grey: #67757f;
-$color-light-grey: #EFEFEF;
+$color-light-white: rgba(255, 255, 255, 0.71);
+$color-grey: rgba(52, 93, 255, 0.91);
+$color-light-grey: rgb(255, 255, 255);
 $color-black: #000000;
 $color-blue-shallow: #a9dbf9;
-$color-blue: #95d2f6;
+$color-blue: rgba(246, 149, 149, 0.93);
 $color-blue-active: #30a4fc;
 $color-blue-light: #2aa3ef;
-$color-blue-dark: #2796dd;
+$color-blue-dark: rgba(52, 177, 255, 0.91);
 $color-red: rgb(245, 108, 108);
+$color-theme: #409eff;
+$color-dark-grey: #666;
+$color-danger: rgb(255, 26, 53);
+$color-warning: rgb(255, 26, 53);
+$color-dark: #2c3e50;
 
 // Theme Global Color
 $theme-color: $color-blue;
