@@ -1,49 +1,157 @@
+/* 统一样式重置 */
 html, body, div, span,
 h1, h2, h3, h4, h5, h6, p, blockquote, pre,
-dl, dt, dd, ol, ul, li,hr,img,a,
+dl, dt, dd, ol, ul, li, hr, img, a,
 form, label, tr, th, td,
 article, aside, canvas, details, embed,
 figure, figcaption, footer, header {
   padding: 0;
   margin: 0;
+  box-sizing: border-box;
 }
 
-html,
-body,
-#app,
-.wrapper {
+/* 页面、App 全屏 */
+html, body, #app, .wrapper {
   width: 100%;
   height: 100%;
+  font-family: 'Helvetica Neue', 'PingFang SC', 'Microsoft YaHei', sans-serif;
   overflow: hidden;
 }
 
-ul,
-li {
-  list-style: none;
-  display: inline-block;
+/* 背景毛玻璃容器 */
+.container {
+  margin: 10px auto;
+  padding: 10px;
+  width: 100%;
+  max-width: 1600px;
+  height: calc(100% - 60px);
+  background: rgba(255, 255, 255, 0.2);
+  backdrop-filter: blur(12px);
+  border-radius: 10px;
+  box-shadow: 0 8px 32px rgba(0, 0, 0, 0.15);
+  overflow: hidden;
 }
 
-a {
-  text-decoration: none;
-}
-
-.crumbs {
+/* 工具栏样式 */
+.handle-box {
   margin-bottom: 20px;
+  font-size: 14px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
 }
 
+.handle-box input {
+  margin: 0 10px;
+  padding: 4px 8px;
+  border-radius: 8px;
+}
+
+/* 按钮优化 */
+.el-button {
+  border-radius: 8px !important;
+}
+
+/* 表格图片样式 */
+.el-table img {
+  border-radius: 8px;
+  box-shadow: 0 2px 8px rgba(0,0,0,0.1);
+}
+
+/* 分页样式居中 */
 .pagination {
   display: flex;
   justify-content: center;
   margin: 20px 0;
 }
 
-.handle-box {
+/* 面包屑 */
+.crumbs {
   margin-bottom: 20px;
-  font-size: 12px;
-  display: flex;
-  width: 30%;
 }
 
-.handle-box input {
-  margin: 0 10px;
+/* 无序列表样式清除 */
+ul, li {
+  list-style: none;
+  display: inline-block;
+}
+
+/* 链接去除下划线 */
+a {
+  text-decoration: none;
+}
+
+/* el-dialog 弹窗样式优化 */
+.el-dialog {
+  border-radius: 16px;
+  background: rgba(255, 255, 255, 0.75) !important;
+  backdrop-filter: blur(10px);
+}
+
+/* 表单输入框圆角 */
+.el-input__inner {
+  border-radius: 8px;
+}
+
+/* Tag标签美化（若使用） */
+.el-tag {
+  border-radius: 6px;
+  padding: 2px 10px;
+}
+
+/* 表格容器透明、无背景冲突 */
+.el-table {
+  background-color: transparent !important;
+  color: #333;
+  border-radius: 12px;
+  overflow: hidden;
+  font-size: 14px;
+}
+
+/* 表头背景略带透明白 */
+.el-table__header-wrapper {
+  background: rgba(255, 255, 255, 0.4) !important;
+  backdrop-filter: blur(8px);
+}
+
+.el-table thead th {
+  background: rgba(255, 255, 255, 0.6) !important;
+  color: #222;
+  font-weight: bold;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.05);
+}
+
+/* 表格主体透明 + 分隔线柔和 */
+.el-table tbody tr {
+  background-color: rgba(255, 255, 255, 0.3);
+  transition: background-color 0.3s;
+}
+
+.el-table tbody tr:hover {
+  background-color: rgba(255, 255, 255, 0.5);
+}
+
+/* 单元格边框色调和渐变融合 */
+.el-table td,
+.el-table th {
+  border-color: rgba(0, 0, 0, 0.05);
+}
+
+/* 图片添加圆角 */
+.el-table img {
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0, 0, 0, 0.1);
+}
+
+/* 可选：滚动条样式美化 */
+.el-table__body-wrapper::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+.el-table__body-wrapper::-webkit-scrollbar-thumb {
+  background: rgba(200, 200, 200, 0.4);
+  border-radius: 4px;
+}
+.el-table__body-wrapper::-webkit-scrollbar-track {
+  background: transparent;
 }

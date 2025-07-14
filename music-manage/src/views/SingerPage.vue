@@ -5,7 +5,7 @@
       <el-input placeholder="筛选歌手" v-model="searchWord"></el-input>
       <el-button type="primary" @click="centerDialogVisible = true">添加歌手</el-button>
     </div>
-    <el-table height="550px" border size="small" :data="data" @selection-change="handleSelectionChange">
+    <el-table height="600px" border size="small" :data="data" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="40" align="center"></el-table-column>
       <el-table-column label="ID" prop="id" width="50" align="center"></el-table-column>
       <el-table-column label="歌手图片" prop="pic" width="110" align="center">
@@ -32,7 +32,7 @@
       <el-table-column label="地区" prop="location" width="100" align="center"></el-table-column>
       <el-table-column label="简介" prop="introduction">
         <template v-slot="scope">
-          <p style="height: 100px; overflow: scroll">
+          <p class="lyric-list">
             {{ scope.row.introduction }}
           </p>
         </template>
@@ -50,13 +50,13 @@
       </el-table-column>
     </el-table>
     <el-pagination
-      class="pagination"
-      background
-      layout="total, prev, pager, next"
-      :current-page="currentPage"
-      :page-size="pageSize"
-      :total="tableData.length"
-      @current-change="handleCurrentChange"
+        class="pagination"
+        background
+        layout="total, prev, pager, next"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :total="tableData.length"
+        @current-change="handleCurrentChange"
     >
     </el-pagination>
   </div>
@@ -378,5 +378,23 @@ export default defineComponent({
   border-radius: 5px;
   margin-bottom: 5px;
   overflow: hidden;
+}
+
+.lyric-list {
+  height: 100px;
+  overflow-y: scroll; /* 保留滚动功能 */
+  -ms-overflow-style: none;  /* IE和Edge隐藏滚动条 */
+  scrollbar-width: none;  /* Firefox隐藏滚动条 */
+}
+
+.lyric-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari和Opera隐藏滚动条 */
+}
+
+::-webkit-scrollbar {
+  width: 0 !important;
+}
+::-webkit-scrollbar {
+  width: 0 !important;height: 0;
 }
 </style>

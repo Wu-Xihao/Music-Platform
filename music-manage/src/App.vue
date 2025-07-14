@@ -17,3 +17,4 @@ window.addEventListener("beforeunload", () => {
   sessionStorage.setItem("dataStore", JSON.stringify(proxy.$store.state));
 });
 </script>
+

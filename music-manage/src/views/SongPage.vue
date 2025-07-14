@@ -11,18 +11,20 @@
       <el-input v-model="searchWord" placeholder="筛选关键词"></el-input>
       <el-button type="primary" @click="centerDialogVisible = true">添加歌曲</el-button>
     </div>
-    <el-table height="550px" border size="small" :data="data" @selection-change="handleSelectionChange">
+    <el-table height="600px" border size="small" :data="data" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="40"></el-table-column>
       <el-table-column label="ID" prop="id" width="50" align="center"></el-table-column>
       <el-table-column label="歌手图片" width="110" align="center">
         <template v-slot="scope">
-          <div style="width: 80px; height: 80px; overflow: hidden">
-            <img :src="attachImageUrl(scope.row.pic)" style="width: 100%" />
-          </div>
-          <div class="play" @click="setSongUrl(scope.row)">
-            <svg class="icon" aria-hidden="true">
-              <use :xlink:href="toggle === scope.row.name ? playIcon : BOFANG"></use>
-            </svg>
+          <div class="image-container">
+            <div class="image-wrapper">
+              <img :src="attachImageUrl(scope.row.pic)" />
+            </div>
+            <div class="play-button" @click="setSongUrl(scope.row)">
+              <svg class="icon" aria-hidden="true">
+                <use :xlink:href="toggle === scope.row.name ? playIcon : BOFANG"></use>
+              </svg>
+            </div>
           </div>
         </template>
       </el-table-column>
@@ -30,11 +32,16 @@
       <el-table-column label="专辑" prop="introduction" width="150"></el-table-column>
       <el-table-column label="歌词" align="center">
         <template v-slot="scope">
-          <ul style="height: 100px; overflow: scroll">
+          <ul class="lyric-list">
             <li v-for="(item, index) in parseLyric(scope.row.lyric)" :key="index">
               {{ item }}
             </li>
           </ul>
+<!--          <ul style="height: 100px; overflow: scroll">-->
+<!--            <li v-for="(item, index) in parseLyric(scope.row.lyric)" :key="index">-->
+<!--              {{ item }}-->
+<!--            </li>-->
+<!--          </ul>-->
         </template>
       </el-table-column>
       <el-table-column label="资源更新" width="120" align="center">
@@ -46,8 +53,8 @@
           <el-upload :action="updateSongUrl(scope.row.id)" :show-file-list="false" :on-success="handleSongSuccess" :before-upload="beforeSongUpload">
             <el-button>更新歌曲</el-button>
           </el-upload>
-            <br />
-           <el-upload :action="updateSongLrc(scope.row.id)" :show-file-list="false" :on-success="handleSongSuccess" :before-upload="beforeSongUpload">
+          <br />
+          <el-upload :action="updateSongLrc(scope.row.id)" :show-file-list="false" :on-success="handleSongSuccess" :before-upload="beforeSongUpload">
             <el-button>更新歌词</el-button>
           </el-upload>
         </template>
@@ -65,13 +72,13 @@
       </el-table-column>
     </el-table>
     <el-pagination
-      class="pagination"
-      background
-      layout="total, prev, pager, next"
-      :current-page="currentPage"
-      :page-size="pageSize"
-      :total="tableData.length"
-      @current-change="handleCurrentChange"
+        class="pagination"
+        background
+        layout="total, prev, pager, next"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :total="tableData.length"
+        @current-change="handleCurrentChange"
     >
     </el-pagination>
   </div>
@@ -208,7 +215,7 @@ export default defineComponent({
     function updateSongUrl(id) {
       return HttpManager.updateSongUrl(id);
     }
-     function updateSongLrc(id) {
+    function updateSongLrc(id) {
       return HttpManager.updateSongLrc(id);
     }
     // 获取当前页
@@ -222,7 +229,7 @@ export default defineComponent({
       });
       if (res.success) getData();
     }
-     function handleLyricsSuccess(res) {
+    function handleLyricsSuccess(res) {
       (proxy as any).$message({
         message: res.message,
         type: res.type,
@@ -296,7 +303,7 @@ export default defineComponent({
             registerForm.singerName = "";
             registerForm.introduction = "";
             registerForm.lyric = "";
-           
+
           }
         }
       };
@@ -425,23 +432,77 @@ export default defineComponent({
 </script>
 
 <style scoped>
-.play {
-  position: absolute;
-  z-index: 100;
+/* 图片容器样式 */
+.image-container {
+  position: relative;
+  width: 100%;
+  height: 100px; /* 与图片高度一致 */
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+.image-wrapper {
   width: 80px;
   height: 80px;
-  top: 18px;
-  left: 15px;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  cursor: pointer;
-}
-.icon {
-  width: 2em;
-  height: 2em;
-  color: white;
-  fill: currentColor;
   overflow: hidden;
+  border-radius: 8px;
+  box-shadow: 0 3px 6px rgba(0, 0, 0, 0.1);
+}
+
+.image-wrapper img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  transition: all 0.3s ease;
+}
+
+/* 播放按钮样式 */
+.play-button {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  width: 36px;
+  height: 36px;
+  background: rgba(0, 0, 0, 0.5);
+  border-radius: 50%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  opacity: 0;
+  transition: all 0.3s ease;
+  z-index: 10;
+}
+
+.play-button:hover {
+  background: rgba(59, 130, 246, 0.8);
+  transform: translate(-50%, -50%) scale(1.1);
+}
+
+.play-button .icon {
+  width: 20px;
+  height: 20px;
+  color: white;
+}
+
+.lyric-list {
+  height: 100px;
+  overflow-y: scroll; /* 保留滚动功能 */
+  -ms-overflow-style: none;  /* IE和Edge隐藏滚动条 */
+  scrollbar-width: none;  /* Firefox隐藏滚动条 */
+}
+
+.lyric-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari和Opera隐藏滚动条 */
+}
+
+.image-container:hover .play-button {
+  opacity: 1;
+}
+
+.image-container:hover .image-wrapper img {
+  filter: brightness(0.7);
 }
 </style>

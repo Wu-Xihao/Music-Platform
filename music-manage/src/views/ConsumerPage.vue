@@ -5,7 +5,7 @@
       <el-input v-model="searchWord" placeholder="筛选用户"></el-input>
     </div>
 
-    <el-table height="550px" border size="small" :data="data" @selection-change="handleSelectionChange">
+    <el-table height="600px" border size="small" :data="data" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="40" align="center"></el-table-column>
       <el-table-column label="ID" prop="id" width="50" align="center"></el-table-column>
       <el-table-column label="用户头像" width="102" align="center">
@@ -39,10 +39,10 @@
         </template>
       </el-table-column>
       <el-table-column label="修改" width="90" align="center">
-        
+
     <template v-slot="scope">
       <el-upload
-        :action="'http://localhost:8888/user/avatar/update?id=' + scope.row.id" 
+        :action="'http://localhost:8888/user/avatar/update?id=' + scope.row.id"
         :show-file-list="false"
         :on-success="handleAvatarSuccess"
         :before-upload="beforeAvatarUpload">
@@ -50,7 +50,7 @@
       </el-upload>
    </template>
 
-        
+
       </el-table-column>
     </el-table>
     <el-pagination

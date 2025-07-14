@@ -6,7 +6,7 @@
       <el-button type="primary" @click="centerDialogVisible = true">添加歌单</el-button>
       <el-button type="primary" @click="exportPlaylist">导出歌单</el-button>
     </div>
-    <el-table height="550px" border size="small" :data="data" @selection-change="handleSelectionChange">
+    <el-table height="600px" border size="small" :data="data" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="40" align="center"></el-table-column>
       <el-table-column label="ID" prop="id" width="50" align="center"></el-table-column>
       <el-table-column label="歌单图片" width="110" align="center">
@@ -21,7 +21,7 @@
       <el-table-column prop="title" label="标题" width="200"></el-table-column>
       <el-table-column label="简介">
         <template v-slot="scope">
-          <p style="height: 100px; overflow: scroll">
+          <p class="lyric-list">
             {{ scope.row.introduction }}
           </p>
         </template>
@@ -159,19 +159,19 @@ export default defineComponent({
         url: 'http://localhost:8888/excle',
         responseType: 'blob', // 设置响应类型为blob
       })
-        .then((response) => {
-          const url = window.URL.createObjectURL(new Blob([response.data]));
-          const link = document.createElement('a');
-          link.href = url;
-          link.setAttribute('download', 'SongList.xlsx'); // 设置下载的文件名
-          document.body.appendChild(link);
-          link.click();
-          link.remove();
-        })
-        .catch((error) => {
-          console.error('导出歌单失败：', error);
-        });
-  }
+          .then((response) => {
+            const url = window.URL.createObjectURL(new Blob([response.data]));
+            const link = document.createElement('a');
+            link.href = url;
+            link.setAttribute('download', 'SongList.xlsx'); // 设置下载的文件名
+            document.body.appendChild(link);
+            link.click();
+            link.remove();
+          })
+          .catch((error) => {
+            console.error('导出歌单失败：', error);
+          });
+    }
 
     // 获取当前页
     function handleCurrentChange(val) {
@@ -357,4 +357,15 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.lyric-list {
+  height: 100px;
+  overflow-y: scroll; /* 保留滚动功能 */
+  -ms-overflow-style: none;  /* IE和Edge隐藏滚动条 */
+  scrollbar-width: none;  /* Firefox隐藏滚动条 */
+}
+
+.lyric-list::-webkit-scrollbar {
+  display: none; /* Chrome, Safari和Opera隐藏滚动条 */
+}
+</style>
