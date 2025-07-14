@@ -169,17 +169,26 @@ export default defineComponent({
 }
 
 .el-form-item {
-  margin-bottom: 100px;
+  margin-bottom: 20px; // 减少输入框之间的间距
 }
 
 .el-input {
-  border-radius: 5px;
+  border-radius: 8px; // 增加圆角
   background: rgba(255, 255, 255, 0.2);
-  border: none;
+  border: 1px solid rgba(255, 255, 255, 0.3); // 添加边框
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.1); // 添加阴影
   color: #fff;
+  padding: 12px; // 增加内边距
 
   &::placeholder {
     color: rgba(255, 255, 255, 0.7);
+    font-size: 14px; // 调整占位符字体大小
+  }
+
+  &:focus {
+    border-color: #fff; // 聚焦时改变边框颜色
+    outline: none; // 移除默认聚焦边框
+    box-shadow: 0 0 10px rgba(255, 255, 255, 0.3); // 聚焦时增加阴影
   }
 }
 

@@ -15,10 +15,10 @@
         </div>
         <el-form ref="signUpForm" label-width="70px" status-icon :model="registerForm" :rules="SignUpRules">
           <el-form-item prop="username" label="用户名">
-            <el-input v-model="registerForm.username" placeholder="用户名" class="scale-in"></el-input>
+            <el-input v-model="registerForm.username" placeholder="用户名" class="scale-in custom-input"></el-input>
           </el-form-item>
           <el-form-item prop="password" label="密码">
-            <el-input type="password" placeholder="密码" v-model="registerForm.password" class="scale-in"></el-input>
+            <el-input type="password" placeholder="密码" v-model="registerForm.password" class="scale-in custom-input"></el-input>
           </el-form-item>
           <el-form-item prop="sex" label="性别">
             <el-radio-group v-model="registerForm.sex">
@@ -28,19 +28,19 @@
             </el-radio-group>
           </el-form-item>
           <el-form-item prop="phoneNum" label="手机">
-            <el-input placeholder="手机" v-model="registerForm.phoneNum" class="scale-in"></el-input>
+            <el-input placeholder="手机" v-model="registerForm.phoneNum" class="scale-in custom-input"></el-input>
           </el-form-item>
           <el-form-item prop="email" label="邮箱">
-            <el-input v-model="registerForm.email" placeholder="邮箱" class="scale-in"></el-input>
+            <el-input v-model="registerForm.email" placeholder="邮箱" class="scale-in custom-input"></el-input>
           </el-form-item>
           <el-form-item prop="birth" label="生日">
-            <el-date-picker type="date" placeholder="选择日期" v-model="registerForm.birth" style="width: 100%" class="scale-in"></el-date-picker>
+            <el-date-picker type="date" placeholder="选择日期" v-model="registerForm.birth" style="width: 100%" class="scale-in custom-input"></el-date-picker>
           </el-form-item>
           <el-form-item prop="introduction" label="签名">
-            <el-input type="textarea" placeholder="签名" v-model="registerForm.introduction" class="scale-in"></el-input>
+            <el-input type="textarea" placeholder="签名" v-model="registerForm.introduction" class="scale-in custom-input"></el-input>
           </el-form-item>
           <el-form-item prop="location" label="地区">
-            <el-select v-model="registerForm.location" placeholder="地区" style="width: 100%" class="scale-in">
+            <el-select v-model="registerForm.location" placeholder="地区" style="width: 100%" class="scale-in custom-input">
               <el-option v-for="item in AREA" :key="item.value" :label="item.label" :value="item.value"></el-option>
             </el-select>
           </el-form-item>
@@ -222,5 +222,24 @@ export default defineComponent({
 .right-form {
   flex: 1;
   padding: 20px;
+}
+
+/* 自定义输入框样式 */
+.custom-input {
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  border-radius: 4px;
+  background-color: rgba(255, 255, 255, 0.1);
+  color: white;
+  transition: border-color 0.3s ease, background-color 0.3s ease;
+
+  &:hover {
+    border-color: rgba(255, 255, 255, 0.8);
+  }
+
+  &:focus {
+    border-color: white;
+    background-color: rgba(255, 255, 255, 0.2);
+    outline: none;
+  }
 }
 </style>

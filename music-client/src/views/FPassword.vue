@@ -57,13 +57,20 @@
 
 .el-input {
   background-color: #282828;
-  border: none;
+  border: 2px solid transparent; /* 初始透明边框 */
   color: #fff;
   border-radius: 5px;
+  box-shadow: 0 0 5px rgba(0, 0, 0, 0.3); /* 添加阴影 */
+  transition: border-color 0.3s ease, box-shadow 0.3s ease; /* 添加过渡效果 */
 }
 
 .el-input::placeholder {
   color: #b3b3b3;
+}
+
+.el-input:focus {
+  border-color: #10d6df; /* 聚焦时的边框颜色 */
+  box-shadow: 0 0 10px rgba(16, 214, 223, 0.5); /* 聚焦时的阴影效果 */
 }
 
 .gradient-button {

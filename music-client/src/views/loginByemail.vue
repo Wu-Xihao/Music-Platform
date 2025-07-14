@@ -19,8 +19,8 @@
             <el-input type="password" placeholder="密码" v-model="registerForm.password" @keyup.enter="handleLoginIn" class="rotate-in transparent-input"></el-input>
           </el-form-item>
           <el-form-item class="sign-btn">
-            <el-button type="primary" @click="handleLoginIn">登录</el-button>
-            <el-button type="primary" @click="handleLoginCancel">取消</el-button>
+            <el-button type="primary" @click="handleLoginIn" :style="{ backgroundColor: buttonColor, borderColor: buttonColor }">登录</el-button>
+            <el-button type="primary" @click="handleLoginCancel" :style="{ backgroundColor: cancelButtonColor, borderColor: cancelButtonColor }">取消</el-button>
           </el-form-item>
         </el-form>
       </div>
@@ -48,6 +48,10 @@ export default defineComponent({
       email: "",
       password: "",
     });
+
+    // 自定义按钮颜色
+    const buttonColor = "#2964cd";
+    const cancelButtonColor = "#d55f5f";
 
     async function handleLoginCancel() {
       routerManager(RouterName.SignIn, { path: RouterName.SignIn });
@@ -87,6 +91,8 @@ export default defineComponent({
       SignInRules,
       handleLoginIn,
       handleLoginCancel,
+      buttonColor,
+      cancelButtonColor
     };
   },
 });
@@ -132,7 +138,7 @@ export default defineComponent({
 
     .sign-head {
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 35px;
 
       span {
         font-size: 24px;
@@ -144,16 +150,17 @@ export default defineComponent({
     .sign-btn {
       display: flex;
       justify-content: space-between;
-      margin-top: 50px;
+      margin-top: 100px;
 
       button {
         width: 48%;
-        transition: background-color 0.3s ease;
+        transition: all 0.3s ease;
         color: white;
+        box-shadow: 0 2px 4px rgba(0, 0, 0, 0.1);
 
         &:hover {
-          background-color: #05ede4;
-          border-color: #05ede4;
+          transform: scale(1.05);
+          box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
         }
       }
     }
@@ -166,6 +173,19 @@ export default defineComponent({
       background-color: transparent;
       border: 1px solid white;
       color: white;
+      padding: 10px 15px; // 添加内边距
+      border-radius: 20px; // 添加圆角
+      transition: all 0.3s ease; // 添加过渡效果
+
+      &::placeholder {
+        color: rgba(255, 255, 255, 0.7); // 调整占位符颜色
+      }
+
+      &:focus {
+        outline: none;
+        border-color: #05ede4; // 焦点时边框颜色
+        box-shadow: 0 0 10px rgba(5, 237, 228, 0.5); // 焦点时阴影效果
+      }
     }
   }
 }
