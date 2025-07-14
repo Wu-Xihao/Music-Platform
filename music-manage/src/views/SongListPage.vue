@@ -1,3 +1,4 @@
+
 <template>
   <div class="container">
     <div class="handle-box">
@@ -142,6 +143,9 @@ export default defineComponent({
     });
 
     getData();
+
+
+
 
     // 获取歌单信息
     async function getData() {
@@ -357,4 +361,77 @@ export default defineComponent({
 });
 </script>
 
-<style scoped></style>
+<style scoped>
+.handle-box {
+  margin-bottom: 20px;
+  display: flex;
+  align-items: center;
+  gap: 10px;
+}
+
+.el-table img {
+  border-radius: 8px;
+  box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.dialog-footer {
+  display: flex;
+  justify-content: flex-end;
+  gap: 10px;
+}
+
+/* 所有按钮统一圆角、渐变背景 */
+.el-button {
+  background: linear-gradient(135deg, #fbc2eb, #a6c1ee);
+  border: none;
+  color: #fff;
+  border-radius: 10px;
+  padding: 10px 18px;
+  box-shadow: 0 4px 12px rgba(255, 182, 193, 0.3);
+  transition: all 0.3s ease;
+}
+
+/* 悬停状态 */
+.el-button:hover {
+  background: linear-gradient(135deg, #a6c1ee, #fbc2eb);
+  box-shadow: 0 6px 20px rgba(255, 182, 193, 0.4);
+}
+
+/* 主按钮（type="primary"）加一点光感 */
+.el-button--primary {
+  background: linear-gradient(to right, #a18cd1, #fbc2eb);
+  font-weight: bold;
+}
+
+/* danger 类型按钮 */
+.el-button--danger {
+  background: linear-gradient(to right, #ff758c, #ff7eb3);
+}
+
+/* 点击状态反馈 */
+.el-button:active {
+  transform: scale(0.98);
+}
+✅ 二、滚动条（全局美化，适配所有滚动区域）
+针对 .el-table__body-wrapper, .el-dialog__body, .container 等滚动区域
+
+💅 推荐 CSS：
+css
+复制
+编辑
+  /* 滚动条 - 统一样式 */
+::-webkit-scrollbar {
+  width: 8px;
+  height: 8px;
+}
+
+
+::-webkit-scrollbar {
+  width: 0 !important;
+}
+::-webkit-scrollbar {
+  width: 0 !important;height: 0;
+}
+
+</style>
+

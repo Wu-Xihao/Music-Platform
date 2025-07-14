@@ -379,4 +379,11 @@ export default defineComponent({
   margin-bottom: 5px;
   overflow: hidden;
 }
+
+::-webkit-scrollbar {
+  width: 0 !important;
+}
+::-webkit-scrollbar {
+  width: 0 !important;height: 0;
+}
 </style>
