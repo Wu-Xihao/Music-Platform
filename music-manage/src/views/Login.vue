@@ -7,11 +7,11 @@
       <el-form :model="ruleForm" :rules="rules" class="form-style">
         <!-- 用户名输入框 -->
         <el-form-item prop="username">
-          <el-input v-model="ruleForm.username" placeholder="请输入用户名" class="input-style"></el-input>
+          <el-input v-model="ruleForm.username" placeholder="请输入用户名" class="input-style" @focus="onInputFocus" @blur="onInputBlur"></el-input>
         </el-form-item>
         <!-- 密码输入框 -->
         <el-form-item prop="password">
-          <el-input type="password" placeholder="请输入密码" v-model="ruleForm.password" @keyup.enter="submitForm" class="input-style"></el-input>
+          <el-input type="password" placeholder="请输入密码" v-model="ruleForm.password" @keyup.enter="submitForm" class="input-style" @focus="onInputFocus" @blur="onInputBlur"></el-input>
         </el-form-item>
         <!-- 登录按钮 -->
         <el-form-item>
@@ -55,11 +55,21 @@ export default defineComponent({
       if (result.success) routerManager(RouterName.Info, { path: RouterName.Info });
     }
 
+    const onInputFocus = () => {
+      // 这里可以添加其他逻辑，比如记录输入框状态等
+    };
+
+    const onInputBlur = () => {
+      // 这里可以添加其他逻辑，比如记录输入框状态等
+    };
+
     return {
       nusicName,
       ruleForm,
       rules,
       submitForm,
+      onInputFocus,
+      onInputBlur,
     };
   },
 });
@@ -94,9 +104,10 @@ export default defineComponent({
   width: 380px;
   padding: 40px;
   border-radius: 15px;
-  background: rgba(255, 255, 255, 0.9);
+  background: rgba(255, 255, 255, 0.3); /* 设置背景为半透明 */
   box-shadow: 0 10px 20px rgba(0, 0, 0, 0.19), 0 6px 6px rgba(0, 0, 0, 0.23);
   animation: fadeInUp 1s ease-out;
+  backdrop-filter: blur(10px); /* 添加背景模糊效果 */
 }
 
 /* 表单样式 */
@@ -109,14 +120,41 @@ export default defineComponent({
 /* 输入框样式 */
 .input-style {
   border-radius: 8px;
-  border: 1px solid #ccc;
-  transition: border-color 0.3s ease, transform 0.3s ease; /* 添加 transform 过渡 */
+  border: 2px solid #ccc; /* 修改边框宽度和颜色 */
+  box-shadow: inset 0 1px 3px rgba(0, 0, 0, 0.1); /* 添加内阴影 */
+  transition: all 0.3s ease; /* 添加过渡效果 */
+  padding: 10px; /* 添加内边距 */
+  font-size: 16px; /* 修改字体大小 */
 }
 
 .input-style:focus {
   border-color: #667eea;
   outline: none;
-  transform: scale(1.1); /* 放大输入框 */
+  animation: scaleIn 0.3s ease forwards;
+}
+
+.input-style:not(:focus) {
+  animation: scaleOut 0.3s ease forwards;
+}
+
+/* 输入框放大动画 */
+@keyframes scaleIn {
+  from {
+    transform: scale(1);
+  }
+  to {
+    transform: scale(1.1);
+  }
+}
+
+/* 输入框缩小动画 */
+@keyframes scaleOut {
+  from {
+    transform: scale(1.1);
+  }
+  to {
+    transform: scale(1);
+  }
 }
 
 /* 登录按钮样式 */

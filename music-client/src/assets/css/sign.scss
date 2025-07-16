@@ -41,11 +41,11 @@ body::before {
 }
 
 .sign {
-  padding: 30px 50px;
-  border-radius: 10px;
+  padding: 30px 100px;
+  border-radius: 50px;
   // 移除渐变色，改为透明背景+模糊效果
   background: rgba(9, 9, 9, 0.1);
-  backdrop-filter: blur(10px); // 毛玻璃效果，增强透明感
+  backdrop-filter: blur(100px); // 毛玻璃效果，增强透明感
   -webkit-backdrop-filter: blur(10px); // 兼容 Safari
   box-shadow: 0 0 10px rgba(0, 0, 0, 0.3); // 弱化阴影，适配透明背景
 
@@ -59,7 +59,7 @@ body::before {
   .sign-btn:deep(.el-form-item__content) {
     @include layout(space-between);
     button {
-      width: 48%; // 调整按钮宽度，留出间距
+      width: 50%; // 调整按钮宽度，留出间距
     }
   }
 }

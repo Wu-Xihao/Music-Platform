@@ -34,7 +34,17 @@ import { defineComponent, reactive, getCurrentInstance } from "vue";
 import mixin from "@/mixins/mixin";
 import YinLoginLogo from "@/components/layouts/YinLoginLogo.vue";
 import { HttpManager } from "@/api";
-import { NavName, RouterName, SignInRules } from "@/enums";
+import { NavName, RouterName } from "@/enums";
+
+// 定义验证规则
+const SignInRules = {
+  username: [
+    { required: true, message: '用户名未输入', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '密码未输入', trigger: 'blur' }
+  ]
+};
 
 export default defineComponent({
   components: {

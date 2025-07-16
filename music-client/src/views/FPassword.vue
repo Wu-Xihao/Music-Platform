@@ -8,19 +8,25 @@
       <transition name="scale-in">
         <div class="image-container">
           <img src="./music6.jpg" alt="Music Image">
-          <el-form v-if="showForm" @submit.prevent="handleSubmit">
+          <el-form
+              v-if="showForm"
+              :model="form"
+              :rules="rules"
+              ref="formRef"
+              @submit.prevent="handleSubmit"
+          >
             <el-form-item label="邮箱：" prop="email">
-              <el-input id="email" v-model="email" type="email" required placeholder="请输入邮箱" />
+              <el-input id="email" v-model="form.email" type="email" placeholder="请输入邮箱" />
               <el-button @click="sendVerificationCode" class="gradient-button">发送验证码</el-button>
             </el-form-item>
             <el-form-item label="验证码：" prop="code">
-              <el-input id="code" v-model="code" type="text" required placeholder="请输入验证码" />
+              <el-input id="code" v-model="form.code" type="text" placeholder="请输入验证码" />
             </el-form-item>
             <el-form-item label="新密码：" prop="password">
-              <el-input id="password" v-model="password" type="password" required placeholder="请输入新密码" />
+              <el-input id="password" v-model="form.password" type="password" placeholder="请输入新密码" />
             </el-form-item>
             <el-form-item label="确认密码：" prop="confirmPassword">
-              <el-input id="confirmPassword" v-model="confirmPassword" type="password" required placeholder="请再次输入新密码" />
+              <el-input id="confirmPassword" v-model="form.confirmPassword" type="password" placeholder="请再次输入新密码" />
             </el-form-item>
             <el-form-item>
               <el-button @click="handleSubmit" type="submit" class="gradient-button">提交</el-button>
@@ -135,10 +141,26 @@ import axios from 'axios';
 export default {
   data() {
     return {
-      email: "",
-      code: "",
-      password: "",
-      confirmPassword: "",
+      form: {
+        email: "",
+        code: "",
+        password: "",
+        confirmPassword: ""
+      },
+      rules: {
+        email: [
+          { required: true, message: '邮箱未输入', trigger: 'blur' }
+        ],
+        code: [
+          { required: true, message: '验证码未输入', trigger: 'blur' }
+        ],
+        password: [
+          { required: true, message: '新密码未输入', trigger: 'blur' }
+        ],
+        confirmPassword: [
+          { required: true, message: '确认密码未输入', trigger: 'blur' }
+        ]
+      },
       showForm: false // 新增一个变量来控制表单的显示与隐藏
     };
   },
@@ -149,7 +171,7 @@ export default {
   methods: {
     async sendVerificationCode() {
       try {
-        const email = document.getElementById('email').value;
+        const email = this.form.email;
         const response = await axios.get('http://localhost:8888/user/sendVerificationCode', {
           params: {
             email: email
@@ -169,30 +191,30 @@ export default {
       }
     },
     async handleSubmit() {
-      try {
-        const email = document.getElementById('email').value;
-        const code = document.getElementById('code').value;
-        const password = document.getElementById('password').value;
-        const confirmPassword = document.getElementById('confirmPassword').value;
-        const data = {
-          email: email,
-          code: code,
-          password: password,
-          confirmPassword: confirmPassword
-        };
-        const response = await axios.post('http://localhost:8888/user/resetPassword', data);
-        console.log(response.data);
-        this.$message({
-          message: response.data,
-          type: 'success'
-        });
-      } catch (error) {
-        console.error('Error submitting form:', error);
-        this.$message({
-          message: '提交表单失败',
-          type: 'error'
-        });
-      }
+      this.$refs.formRef.validate(async (valid) => {
+        if (valid) {
+          try {
+            const data = {
+              email: this.form.email,
+              code: this.form.code,
+              password: this.form.password,
+              confirmPassword: this.form.confirmPassword
+            };
+            const response = await axios.post('http://localhost:8888/user/resetPassword', data);
+            console.log(response.data);
+            this.$message({
+              message: response.data,
+              type: 'success'
+            });
+          } catch (error) {
+            console.error('Error submitting form:', error);
+            this.$message({
+              message: '提交表单失败',
+              type: 'error'
+            });
+          }
+        }
+      });
     }
   },
 };

@@ -33,7 +33,17 @@ import { defineComponent, reactive, getCurrentInstance } from "vue";
 import mixin from "@/mixins/mixin";
 import YinLoginLogo from "@/components/layouts/YinLoginLogo.vue";
 import { HttpManager } from "@/api";
-import { NavName, RouterName, SignInRules } from "@/enums";
+import { NavName, RouterName } from "@/enums";
+
+// 定义表单验证规则
+const SignInRules = {
+  email: [
+    { required: true, message: '邮箱未输入', trigger: 'blur' }
+  ],
+  password: [
+    { required: true, message: '密码未输入', trigger: 'blur' }
+  ]
+};
 
 export default defineComponent({
   components: {
@@ -50,8 +60,8 @@ export default defineComponent({
     });
 
     // 自定义按钮颜色
-    const buttonColor = "#2964cd";
-    const cancelButtonColor = "#d55f5f";
+    const buttonColor = "#000000";
+    const cancelButtonColor = "#000000";
 
     async function handleLoginCancel() {
       routerManager(RouterName.SignIn, { path: RouterName.SignIn });

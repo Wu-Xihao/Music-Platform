@@ -60,7 +60,7 @@ import mixin from "@/mixins/mixin";
 import YinLoginLogo from "@/components/layouts/YinLoginLogo.vue";
 import { HttpManager } from "@/api";
 import { getBirth } from "@/utils";
-import { AREA, RouterName, NavName, SignUpRules } from "@/enums";
+import { AREA, RouterName, NavName } from "@/enums";
 
 export default defineComponent({
   components: {
@@ -80,6 +80,16 @@ export default defineComponent({
       introduction: "",
       location: "",
     });
+
+    // 定义验证规则
+    const SignUpRules = {
+      username: [
+        { required: true, message: '用户名未输入', trigger: 'blur' }
+      ],
+      password: [
+        { required: true, message: '密码未输入', trigger: 'blur' }
+      ]
+    };
 
     async function goBackRegist() {
       routerManager(RouterName.SignIn, { path: RouterName.SignIn });
