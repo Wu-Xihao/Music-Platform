@@ -76,7 +76,7 @@
       <section class="playlist-section">
         <div class="section-header">
           <h2 class="section-title">热门歌单</h2>
-          <router-link to="/song-sheet" class="view-more">查看更多</router-link>
+
         </div>
         <play-list
             class="play-list-container"
@@ -84,13 +84,16 @@
             :playList="songList"
             type="song"
         ></play-list>
+        <div class="view-more-container">
+          <router-link to="/song-sheet" class="view-more">查看更多歌单</router-link>
+        </div>
       </section>
 
       <!-- 热门歌手 -->
       <section class="playlist-section">
         <div class="section-header">
           <h2 class="section-title">热门歌手</h2>
-          <router-link to="/singer" class="view-more">查看更多</router-link>
+
         </div>
         <play-list
             class="play-list-container"
@@ -98,6 +101,9 @@
             :playList="singerList"
             type="singer"
         ></play-list>
+        <div class="view-more-container">
+          <router-link to="/singer" class="view-more">查看更多歌手</router-link>
+        </div>
       </section>
     </div>
   </div>
@@ -462,27 +468,41 @@ onUnmounted(() => {
         border-radius: 2px;
       }
     }
-    .view-more {
-      font-size: 14px;
-      color: $color-grey;
-      text-decoration: none;
-      transition: color 0.3s;
-      display: flex;
-      align-items: center;
-      justify-content: center; /* 居中 */
+
+  }
+}
+
+/* 查看更多容器 */
+.view-more-container {
+  display: flex;
+  justify-content: center;
+  margin-top: 25px;
+  padding-top: 15px;
+  border-top: 1px dashed #e0e0e0;
+
+  .view-more {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 25px;
+    font-size: 15px;
+    color: $color-blue;
+    text-decoration: none;
+    border: 2px solid $color-blue;
+    border-radius: 30px;
+    transition: all 0.3s ease;
+
+    &:after {
+      content: "→";
+      margin-left: 8px;
+      transition: transform 0.3s;
+    }
+
+    &:hover {
+      background-color: $color-blue;
+      color: white;
 
       &:after {
-        content: "→";
-        margin-left: 5px;
-        transition: transform 0.3s;
-      }
-
-      &:hover {
-        color: $color-blue;
-
-        &:after {
-          transform: translateX(3px);
-        }
+        transform: translateX(5px);
       }
     }
   }
