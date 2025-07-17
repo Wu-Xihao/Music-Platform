@@ -99,11 +99,6 @@ const routes: Array<RouteRecordRaw> = [
           }
         ]
       },
-      {
-        path: '/play',
-        name: 'PlayPage',
-        component: () => import('@/views/PlayPage.vue')
-      }
     ],
   },
 ];
