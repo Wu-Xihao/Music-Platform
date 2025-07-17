@@ -20,7 +20,15 @@
         <div class="waveform-container">
           <canvas ref="waveformCanvas" class="waveform"></canvas>
           <div v-if="!waveformVisible" class="waveform-placeholder">
-            <span class="placeholder-text">正在加载波形...</span>
+            <span class="placeholder-text">{{ waveformMessage }}</span>
+            <el-button
+                v-if="showActivateButton"
+                type="primary"
+                size="small"
+                @click="activateWaveform"
+            >
+              激活波形图
+            </el-button>
           </div>
         </div>
       </div>
@@ -93,6 +101,7 @@ import {
   nextTick
 } from 'vue';
 import { useStore } from 'vuex';
+import { ElMessage } from 'element-plus';
 import Comment from '@/components/Comment.vue';
 import { parseLyric } from '@/utils';
 import { HttpManager } from '@/api';
@@ -115,7 +124,7 @@ const singerName   = computed(() => store.getters.singerName);
 const songPic      = computed(() => store.getters.songPic);
 const lyric        = computed(() => store.getters.lyric);
 const curTime      = computed(() => store.getters.curTime);
-const isPlaying    = computed(() => store.getters.isPlaying);
+const isPlaying    = computed(() => store.getters.isPlay);
 const audioElement = computed(() => store.getters.audioElement);
 const currentPlayList     = computed(() => store.getters.currentPlayList);
 const currentPlayIndex    = computed(() => store.getters.currentPlayIndex);
@@ -136,6 +145,8 @@ const analyser       = ref<AnalyserNode | null>(null);
 const dataArray      = ref<Uint8Array | null>(null);
 const animationId    = ref<number | null>(null);
 const waveformVisible = ref(false);
+const waveformMessage = ref('正在加载波形...');
+const showActivateButton = ref(false);
 const isAudioAnalyserInitialized = ref(false);
 
 /* ---------- 工具 ---------- */
@@ -184,28 +195,59 @@ const animateParticles = () => {
   requestAnimationFrame(animateParticles);
 };
 
-/* ---------- 波形 ---------- */
+/* ---------- 波形图激活 ---------- */
+const activateWaveform = () => {
+  if (!audioElement.value) {
+    waveformMessage.value = '音频元素未准备好';
+    return;
+  }
+
+  // 检查 AudioContext 是否被挂起
+  if (audioContext.value?.state === 'suspended') {
+    audioContext.value.resume().then(() => {
+      initAudioAnalyser();
+    }).catch(e => {
+      console.error('激活音频上下文失败', e);
+      waveformMessage.value = '激活失败，请刷新页面重试';
+      showActivateButton.value = true;
+    });
+  } else {
+    initAudioAnalyser();
+  }
+};
+
+/* ---------- 波形图初始化 ---------- */
 const initAudioAnalyser = () => {
   if (!audioElement.value || !waveformCanvas.value || isAudioAnalyserInitialized.value) return;
   try {
     const AudioContext = window.AudioContext || (window as any).webkitAudioContext;
     audioContext.value = new AudioContext();
+
+    // 创建分析器节点
     analyser.value = audioContext.value.createAnalyser();
     analyser.value.fftSize = 256;
     analyser.value.smoothingTimeConstant = 0.8;
 
+    // 连接音频源
     const source = audioContext.value.createMediaElementSource(audioElement.value);
     source.connect(analyser.value);
     analyser.value.connect(audioContext.value.destination);
 
+    // 创建数据数组
     const bufferLength = analyser.value.frequencyBinCount;
     dataArray.value = new Uint8Array(bufferLength);
 
     isAudioAnalyserInitialized.value = true;
     waveformVisible.value = true;
+    waveformMessage.value = '波形图已激活';
+    showActivateButton.value = false;
+
+    // 开始绘制波形
     drawWaveform();
   } catch (e) {
     console.error('初始化音频分析器失败', e);
+    waveformMessage.value = '初始化失败，请刷新页面重试';
+    showActivateButton.value = true;
   }
 };
 
@@ -214,29 +256,41 @@ const drawWaveform = () => {
     animationId.value = requestAnimationFrame(drawWaveform);
     return;
   }
+
   const canvas = waveformCanvas.value;
-  const ctx = canvas.getContext('2d')!;
+  const ctx = canvas.getContext('2d');
+  if (!ctx) return;
+
+  // 更新画布尺寸
   const rect = canvas.getBoundingClientRect();
   if (canvas.width !== rect.width || canvas.height !== rect.height) {
     canvas.width = rect.width;
     canvas.height = rect.height;
   }
+
   const w = canvas.width, h = canvas.height;
+
+  // 获取音频数据
   analyser.value.getByteTimeDomainData(dataArray.value);
+
+  // 清除画布
   ctx.clearRect(0, 0, w, h);
 
+  // 创建渐变背景
   const gradient = ctx.createLinearGradient(0, 0, 0, h);
   gradient.addColorStop(0, 'rgba(77,161,255,.1)');
   gradient.addColorStop(1, 'rgba(94,107,255,.05)');
   ctx.fillStyle = gradient;
   ctx.fillRect(0, 0, w, h);
 
+  // 设置波形样式
   ctx.lineWidth = 3;
   ctx.strokeStyle = '#4da1ff';
   ctx.shadowColor = 'rgba(77,161,255,.6)';
   ctx.shadowBlur = 8;
   ctx.beginPath();
 
+  // 计算波形路径
   const slice = w / dataArray.value.length;
   let x = 0;
   for (let i = 0; i < dataArray.value.length; i++) {
@@ -245,9 +299,23 @@ const drawWaveform = () => {
     i === 0 ? ctx.moveTo(x, y) : ctx.lineTo(x, y);
     x += slice;
   }
+
+  // 绘制波形
   ctx.lineTo(w, h / 2);
   ctx.stroke();
 
+  // 添加填充效果
+  ctx.lineTo(w, h);
+  ctx.lineTo(0, h);
+  ctx.closePath();
+
+  const fillGradient = ctx.createLinearGradient(0, 0, w, 0);
+  fillGradient.addColorStop(0, 'rgba(77,161,255,.1)');
+  fillGradient.addColorStop(1, 'rgba(94,107,255,.1)');
+  ctx.fillStyle = fillGradient;
+  ctx.fill();
+
+  // 继续绘制
   animationId.value = requestAnimationFrame(drawWaveform);
 };
 
@@ -284,9 +352,16 @@ watch(
     { immediate: true }
 );
 
+
 watch(isPlaying, (playing) => {
-  if (playing && !isAudioAnalyserInitialized.value) initAudioAnalyser();
-  else if (!playing) waveformVisible.value = false;
+  if (playing) {
+    if (!isAudioAnalyserInitialized.value) {
+      // 延迟初始化，确保音频元素已准备好
+      setTimeout(initAudioAnalyser, 300);
+    }
+  } else {
+    waveformVisible.value = false;
+  }
 });
 
 watch(curTime, () => {
@@ -302,18 +377,41 @@ watch(curTime, () => {
   }
 });
 
-/* ---------- lifecycle ---------- */
+/* ---------- 生命周期 ---------- */
 onMounted(() => {
   initParticles();
   animateParticles();
+
+  // 监听音频元素加载完成
   if (audioElement.value) {
-    audioElement.value.addEventListener('canplay', () => {
-      if (isPlaying.value && !isAudioAnalyserInitialized.value) initAudioAnalyser();
-    });
-    audioElement.value.addEventListener('play', () => {
-      if (!isAudioAnalyserInitialized.value) initAudioAnalyser();
+    audioElement.value.addEventListener('loadeddata', () => {
+      waveformMessage.value = '音频加载完成，可以激活波形图';
+      showActivateButton.value = true;
     });
   }
+
+  // 尝试初始化波形图
+  setTimeout(() => {
+    if (!isAudioAnalyserInitialized.value && isPlaying.value) {
+      initAudioAnalyser();
+    } else if (!isAudioAnalyserInitialized.value) {
+      waveformMessage.value = '需要用户交互激活波形图';
+      showActivateButton.value = true;
+    }
+  }, 1000);
+
+  // 监听用户交互以恢复 AudioContext
+  document.addEventListener('click', () => {
+    if (audioContext.value?.state === 'suspended') {
+      audioContext.value.resume().then(() => {
+        if (isPlaying.value) {
+          initAudioAnalyser();
+        }
+      }).catch(e => {
+        console.error('恢复 AudioContext 失败', e);
+      });
+    }
+  }, { once: true });
 });
 
 onUnmounted(() => {
@@ -397,18 +495,32 @@ onUnmounted(() => {
         position: absolute;
         inset: 0;
         display: flex;
+        flex-direction: column;
         align-items: center;
         justify-content: center;
-        background: rgba(224,233,245,.6);
-        backdrop-filter: blur(2px);
+        background: rgba(224,233,245,.8);
+        backdrop-filter: blur(4px);
+        z-index: 2;
+
         .placeholder-text {
           color: #5c7c9f;
           font-size: 16px;
           font-weight: 500;
-          padding: 8px 16px;
-          background: rgba(255,255,255,.7);
-          border-radius: 20px;
-          box-shadow: 0 2px 10px rgba(0,0,0,.05);
+          margin-bottom: 10px;
+          text-align: center;
+        }
+
+        .el-button {
+          background: #4da1ff;
+          border: none;
+          box-shadow: 0 2px 8px rgba(77, 161, 255, 0.3);
+          transition: all 0.3s ease;
+
+          &:hover {
+            background: #3a8de0;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 12px rgba(77, 161, 255, 0.4);
+          }
         }
       }
     }

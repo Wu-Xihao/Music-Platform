@@ -23,6 +23,9 @@ export default {
     currentPlayList: [], // 当前播放列表
     songDetails: null, // 单个歌单信息
     currentPlayIndex: -1, // 当前歌曲在歌曲列表的位置
+
+    /** 音频元素 */
+    audioElement: null, // 音频元素
   },
   getters: {
     songId: (state) => state.songId,
@@ -43,6 +46,8 @@ export default {
     currentPlayList: (state) => state.currentPlayList,
     songDetails: (state) => state.songDetails,
     currentPlayIndex: (state) => state.currentPlayIndex,
+
+    audioElement: (state) => state.audioElement, // 添加 getter
   },
   mutations: {
     setSongId: (state, songId) => {
@@ -95,6 +100,8 @@ export default {
     setCurrentPlayIndex: (state, currentPlayIndex) => {
       state.currentPlayIndex = currentPlayIndex;
     },
+
+    setAudioElement: (state, el) => state.audioElement = el,
   },
   actions: {
     playMusic: ({ commit }, { id, url, pic, index, songTitle, singerName, lyric, currentSongList }) => {
