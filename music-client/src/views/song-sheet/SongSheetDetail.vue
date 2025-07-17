@@ -1,27 +1,44 @@
 <template>
-  <el-container>
+  <el-container class="album-container">
     <el-aside class="album-slide">
       <el-image class="album-img" fit="contain" :src="attachImageUrl(songDetails.pic)" />
       <h3 class="album-info">{{ songDetails.title }}</h3>
+      <div class="album-meta">
+        <p v-if="songDetails.introduction" class="album-intro">{{ songDetails.introduction }}</p>
+      </div>
     </el-aside>
     <el-main class="album-main">
-      <h1>简介</h1>
-      <p>{{ songDetails.introduction }}</p>
-      <!--评分-->
-      <div class="album-score">
-        <div>
-          <h3>歌单评分</h3>
-          <el-rate v-model="rank" allow-half disabled></el-rate>
+      <div class="album-content">
+        <div class="album-header">
+          <h1 class="album-title">歌单详情</h1>
+          <div class="divider"></div>
         </div>
-        <span>{{ rank * 2 }}</span>
-        <div>
-          <h3>{{ assistText }} {{ score * 2 }}</h3>
-          <el-rate allow-half v-model="score" :disabled="disabledRank" @click="pushValue()"></el-rate>
+
+        <!--评分-->
+        <div class="album-score">
+          <div class="score-card">
+            <h3>歌单评分</h3>
+            <el-rate v-model="rank" allow-half disabled></el-rate>
+            <div class="score-value">{{ (rank * 2).toFixed(1) }}</div>
+          </div>
+          <div class="score-card user-score">
+            <h3>{{ assistText }}</h3>
+            <el-rate allow-half v-model="score" :disabled="disabledRank" @click="pushValue()"></el-rate>
+            <div class="score-value">{{ (score * 2).toFixed(1) }}</div>
+          </div>
+        </div>
+
+        <!--歌曲-->
+        <div class="album-section">
+          <h2 class="section-title">包含歌曲</h2>
+          <song-list class="album-body" :songList="currentSongList"></song-list>
+        </div>
+
+        <div class="album-section">
+          <h2 class="section-title">评论</h2>
+          <comment :playId="songListId" :type="1"></comment>
         </div>
       </div>
-      <!--歌曲-->
-      <song-list class="album-body" :songList="currentSongList"></song-list>
-      <comment :playId="songListId" :type="1"></comment>
     </el-main>
   </el-container>
 </template>
@@ -50,12 +67,11 @@ export default defineComponent({
     const nowRank = ref(0);
     const disabledRank = ref(false);
     const assistText = ref("评价");
-    // const evaluateList = ref(["很差", "较差", "还行", "推荐", "力推"]);
     const songDetails = computed(() => store.getters.songDetails); // 单个歌单信息
     const nowUserId = computed(() => store.getters.userId);
-  
+
     nowSongListId.value = songDetails.value.id; // 给歌单ID赋值
-  
+
     // 收集歌单里面的歌曲
     async function getSongId(id) {
       const result = (await HttpManager.getListSongOfSongId(id)) as ResponseBody;
@@ -123,70 +139,179 @@ export default defineComponent({
 <style lang="scss" scoped>
 @import "@/assets/css/var.scss";
 
+.album-container {
+  background-color: var(--el-bg-color);
+  min-height: 100vh;
+  transition: all 0.3s ease;
+}
+
 .album-slide {
   display: flex;
   flex-direction: column;
   align-items: center;
-  padding-top: 20px;
+  padding: 2rem 1rem;
+  background-color: var(--el-bg-color-page);
+  box-shadow: 0 2px 10px rgba(0, 0, 0, 0.05);
+  border-right: 1px solid var(--el-border-color-light);
 
   .album-img {
     height: 250px;
     width: 250px;
-    border-radius: 10%;
+    border-radius: 12px;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    transition: transform 0.3s ease;
+
+    &:hover {
+      transform: scale(1.03);
+    }
   }
 
   .album-info {
-    width: 70%;
-    padding-top: 2rem;
+    width: 100%;
+    padding: 1.5rem 0 0.5rem;
+    text-align: center;
+    font-size: 1.5rem;
+    font-weight: 600;
+    color: var(--el-text-color-primary);
+  }
+
+  .album-meta {
+    width: 100%;
+    padding: 1rem;
+    text-align: center;
+  }
+
+  .album-intro {
+    color: var(--el-text-color-secondary);
+    font-size: 0.95rem;
+    line-height: 1.6;
+    margin-top: 1rem;
+    padding: 0 1rem;
   }
 }
 
 .album-main {
-  h1 {
-    font-size: 22px;
+  padding: 2rem;
+  background-color: var(--el-bg-color);
+
+  .album-content {
+    max-width: 900px;
+    margin: 0 auto;
   }
 
-  p {
-    color: rgba(0, 0, 0, 0.5);
-    margin: 10px 0 20px 0px;
+  .album-header {
+    margin-bottom: 2rem;
+
+    .album-title {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--el-text-color-primary);
+      margin-bottom: 0.5rem;
+    }
+
+    .divider {
+      height: 2px;
+      background: linear-gradient(to right, var(--el-color-primary), transparent);
+      width: 100px;
+      margin: 0.5rem 0 1.5rem;
+    }
   }
-  /*歌单打分*/
-  .album-score {
-    display: flex;
-    align-items: center;
-    margin: 1vw;
+
+  .album-section {
+    margin-bottom: 2.5rem;
+
+    .section-title {
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--el-text-color-primary);
+      margin-bottom: 1rem;
+      padding-bottom: 0.5rem;
+      border-bottom: 1px solid var(--el-border-color-light);
+    }
+  }
+}
+
+/*歌单打分*/
+.album-score {
+  display: flex;
+  justify-content: space-around;
+  align-items: center;
+  margin: 2rem 0;
+  gap: 2rem;
+
+  .score-card {
+    flex: 1;
+    padding: 1.5rem;
+    background-color: var(--el-bg-color-page);
+    border-radius: 12px;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.05);
+    text-align: center;
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+
+    &:hover {
+      transform: translateY(-3px);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    }
 
     h3 {
-      margin: 10px 0;
+      margin: 0 0 1rem;
+      font-size: 1.1rem;
+      color: var(--el-text-color-primary);
     }
-    span {
-      font-size: 60px;
+
+    .el-rate {
+      margin-bottom: 0.5rem;
     }
-    & > div:last-child {
-      margin-left: 10%;
+
+    .score-value {
+      font-size: 1.8rem;
+      font-weight: 600;
+      color: var(--el-color-primary);
+      margin-top: 0.5rem;
     }
   }
 
-  .album-body {
-    margin: 20px 0 20px 0px;
+  .user-score {
+    border: 1px solid var(--el-color-primary-light-5);
+    background-color: rgba(var(--el-color-primary-rgb), 0.05);
   }
+}
+
+.album-body {
+  margin: 1rem 0;
 }
 
 @media screen and (min-width: $sm) {
   .album-slide {
     position: fixed;
-    width: 400px;
+    width: 320px;
+    height: 100vh;
+    overflow-y: auto;
   }
+
   .album-main {
     min-width: 600px;
-    padding-right: 10vw;
-    margin-left: 400px;
+    margin-left: 320px;
+    padding: 3rem;
   }
 }
 
 @media screen and (max-width: $sm) {
   .album-slide {
     display: none;
+  }
+
+  .album-main {
+    padding: 1.5rem;
+  }
+
+  .album-score {
+    flex-direction: column;
+    gap: 1.5rem;
+
+    .score-card {
+      width: 100%;
+    }
   }
 }
 </style>

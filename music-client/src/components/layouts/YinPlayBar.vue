@@ -246,9 +246,25 @@ export default defineComponent({
       }
     },
     // 选中播放
+    // 修改 toPlay 方法
     toPlay(url) {
       if (url && url !== this.songUrl) {
         const song = this.currentPlayList[this.currentPlayIndex];
+
+        const currentAudio = this.$store.getters.audioElement;
+        if (currentAudio) {
+          currentAudio.pause();
+          currentAudio.src = '';
+        }
+
+        // 创建新音频元素并设置跨域属性
+        const audioElement = new Audio();
+        audioElement.crossOrigin = "anonymous"; // 关键：允许跨域访问
+        audioElement.preload = "auto";
+        audioElement.src = url;
+
+        this.$store.commit("setAudioElement", audioElement);
+
         this.playMusic({
           id: song.id,
           url,

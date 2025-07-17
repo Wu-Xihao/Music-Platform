@@ -101,7 +101,9 @@ export default {
       state.currentPlayIndex = currentPlayIndex;
     },
 
-    setAudioElement: (state, el) => state.audioElement = el,
+    setAudioElement(state, element) {
+      state.audioElement = element;
+    }
   },
   actions: {
     playMusic: ({ commit }, { id, url, pic, index, songTitle, singerName, lyric, currentSongList }) => {
