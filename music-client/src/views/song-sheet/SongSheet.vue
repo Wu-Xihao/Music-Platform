@@ -15,7 +15,14 @@
             <!-- 左侧图片 -->
             <div class="carousel-image">
               <div class="image-wrapper">
-
+                <div class="carousel-image">
+                  <img
+                      :src="HttpManager.attachImageUrl(item.pic)"
+                      :alt="item.name"
+                      loading="lazy"
+                      class="carousel-img"
+                  />
+                </div>
                 <div class="hover-overlay"></div>
               </div>
             </div>
