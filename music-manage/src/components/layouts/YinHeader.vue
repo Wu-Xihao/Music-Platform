@@ -6,7 +6,7 @@
     </div>
     <div class="logo">
       <el-icon class="logo-icon"><Headset /></el-icon>
-      <span>{{ nusicName }}</span>
+      <span>{{ musicName }}</span>
     </div>
     <div class="header-right">
       <div class="header-user-con">
@@ -55,7 +55,7 @@ export default defineComponent({
     const collapse = ref(true);
     const username = ref("admin");
     const userPic = computed(() => store.getters.userPic);
-    const nusicName = ref(MUSICNAME);
+    const musicName = ref(MUSICNAME);
 
     onMounted(() => {
       if (document.body.clientWidth < 1500) {
@@ -75,7 +75,7 @@ export default defineComponent({
       }
     }
     return {
-      nusicName,
+      musicName,
       username,
       userPic,
       collapse,
