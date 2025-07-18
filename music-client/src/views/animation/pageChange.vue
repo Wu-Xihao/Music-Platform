@@ -27,8 +27,6 @@ export default {
 
 <style scoped>
 .auth-container {
-  /* 替换为你的图片地址 */
-  background-image: url('@/assets/images/background1.jpg');
   box-sizing: border-box;
   width: 100%;
   height: 100vh;
@@ -37,7 +35,7 @@ export default {
   justify-content: center;
   align-items: center;
   background-size: cover;
-  position: relative;
+  position: fixed;
   overflow: hidden;
   display: flex;
 }

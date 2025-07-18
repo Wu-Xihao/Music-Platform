@@ -1,403 +1,315 @@
 <template>
-  <el-container class="login-container">
-    <div class="login-box">
-      <!-- 头部区域 -->
-      <el-header class="login-header">
-        <div class="header-logo">
-          <el-icon class="logo-icon"><Headset /></el-icon>
-          <span class="logo-text">音乐平台</span>
+  <el-container class="register-container">
+    <!-- 背景装饰元素 -->
+    <div class="bg-decoration"></div>
+
+    <div class="register-box">
+      <!-- 注册框头部 -->
+      <el-header class="register-header">
+        <div class="logo">
+          <h1>用户注册</h1>
         </div>
       </el-header>
 
-      <!-- 主内容区 -->
-      <el-main class="login-main">
-        <h2 class="login-title">账号登录</h2>
-
-        <!-- 快捷登录 -->
-        <div class="quick-login">
-          <p class="login-desc">快捷登录</p>
-          <div class="button-group">
-            <el-button class="social-btn qq-btn" icon="qq" @click="handleThirdLogin('qq')"></el-button>
-            <el-button class="social-btn wx-btn" icon="weixin" @click="handleThirdLogin('weixin')"></el-button>
-            <el-button class="social-btn email-btn" icon="message" @click="handleEmail"></el-button>
-          </div>
-        </div>
-
-        <!-- 分隔线 -->
-        <div class="separator">
-          <span class="line"></span>
-          <span class="text">或使用账号密码</span>
-          <span class="line"></span>
-        </div>
-
-        <!-- 登录表单 -->
-        <el-form
-            ref="signInForm"
-            :model="registerForm"
-            :rules="SignInRules"
-            class="login-form"
-        >
-          <el-form-item prop="username" class="form-item">
-            <el-input
-                placeholder="用户名/手机号/邮箱"
-                v-model="registerForm.username"
-                class="form-input"
-            >
-              <template #prefix>
-                <el-icon><User /></el-icon>
-              </template>
-            </el-input>
+      <!-- 注册主体内容 -->
+      <el-main class="register-main">
+        <el-form ref="signUpForm" label-width="70px" status-icon :model="registerForm" :rules="SignUpRules">
+          <el-form-item prop="username" label="用户名">
+            <el-input v-model="registerForm.username" placeholder="用户名"></el-input>
+          </el-form-item>
+          <el-form-item prop="password" label="密码">
+            <el-input type="password" placeholder="密码" v-model="registerForm.password"></el-input>
+          </el-form-item>
+          <el-form-item prop="sex" label="性别">
+            <el-radio-group v-model="registerForm.sex">
+              <el-radio :label="0">女</el-radio>
+              <el-radio :label="1">男</el-radio>
+              <el-radio :label="2">保密</el-radio>
+            </el-radio-group>
+          </el-form-item>
+          <el-form-item prop="phoneNum" label="手机">
+            <el-input placeholder="手机" v-model="registerForm.phoneNum"></el-input>
+          </el-form-item>
+          <el-form-item prop="email" label="邮箱">
+            <el-input v-model="registerForm.email" placeholder="邮箱"></el-input>
+          </el-form-item>
+          <el-form-item prop="birth" label="生日">
+            <el-date-picker type="date" placeholder="选择日期" v-model="registerForm.birth" style="width: 100%"></el-date-picker>
+          </el-form-item>
+          <el-form-item prop="introduction" label="签名">
+            <el-input type="textarea" placeholder="签名" v-model="registerForm.introduction"></el-input>
+          </el-form-item>
+          <el-form-item prop="location" label="地区">
+            <el-select v-model="registerForm.location" placeholder="地区" style="width: 100%">
+              <el-option v-for="item in AREA" :key="item.value" :label="item.label" :value="item.value"></el-option>
+            </el-select>
           </el-form-item>
 
-          <el-form-item prop="password" class="form-item">
-            <el-input
-                type="password"
-                placeholder="请输入密码"
-                v-model="registerForm.password"
-                class="form-input"
-            >
-              <template #prefix>
-                <el-icon><Lock /></el-icon>
-              </template>
-            </el-input>
-          </el-form-item>
-
-          <el-button
-              type="primary"
-              @click="handleLoginIn"
-              class="login-submit"
-              :loading="loginLoading"
-          >
-            登录
-          </el-button>
+          <el-footer class="button-footer">
+            <el-form-item class="sign-btn">
+              <div class="button-group">
+                <el-button class="cancel-btn" @click="goBackRegist()">取消</el-button>
+                <el-button type="primary" class="confirm-btn" @click="handleSignUp">确定</el-button>
+              </div>
+            </el-form-item>
+          </el-footer>
         </el-form>
       </el-main>
-
-      <!-- 底部操作区 -->
-      <el-footer class="login-footer">
-        <div class="footer-links">
-          <el-button type="text" class="link-btn" @click="handleSignUp">注册账号</el-button>
-          <span class="split">|</span>
-          <el-button type="text" class="link-btn" @click="handleForgotPassword">忘记密码</el-button>
-        </div>
-      </el-footer>
     </div>
   </el-container>
 </template>
 
 <script lang="ts">
-import { defineComponent, reactive, getCurrentInstance, ref } from "vue";
-import { Headset, Message, User, Lock } from "@element-plus/icons-vue";
+import { defineComponent, reactive, getCurrentInstance } from "vue";
 import mixin from "@/mixins/mixin";
 import { HttpManager } from "@/api";
-import { NavName, RouterName, SignInRules } from "@/enums";
+import { getBirth } from "@/utils";
+import { AREA, RouterName, NavName, SignUpRules } from "@/enums";
 
 export default defineComponent({
-  components: {
-    Headset,
-    // Message,
-    User,
-    Lock
-  },
   setup() {
     const { proxy } = getCurrentInstance();
     const { routerManager, changeIndex } = mixin();
-    const loginLoading = ref(false);
 
-    // 登录表单数据
     const registerForm = reactive({
       username: "",
       password: "",
+      sex: "",
+      phoneNum: "",
+      email: "",
+      birth: new Date(),
+      introduction: "",
+      location: "",
     });
 
-    // 登录处理
-    async function handleLoginIn() {
+    async function goBackRegist() {
+      routerManager(RouterName.SignIn, { path: RouterName.SignIn });
+    }
+
+    async function handleSignUp() {
       let canRun = true;
-      (proxy.$refs["signInForm"] as any).validate((valid) => {
-        if (!valid) canRun = false;
+      (proxy.$refs["signUpForm"] as any).validate((valid) => {
+        if (!valid) return (canRun = false);
       });
       if (!canRun) return;
 
       try {
-        loginLoading.value = true;
-        const result = (await HttpManager.signIn({
-          username: registerForm.username,
-          password: registerForm.password
-        })) as ResponseBody;
-
+        const username = registerForm.username;
+        const password = registerForm.password;
+        const sex = registerForm.sex;
+        const phoneNum = registerForm.phoneNum;
+        const email = registerForm.email;
+        const birth = registerForm.birth;
+        const introduction = registerForm.introduction;
+        const location = registerForm.location;
+        const result = (await HttpManager.SignUp({ username, password, sex, phoneNum, email, birth, introduction, location })) as ResponseBody;
         (proxy as any).$message({
           message: result.message,
           type: result.type,
         });
 
         if (result.success) {
-          // 存储用户信息
-          proxy.$store.commit("setUserId", result.data[0].id);
-          proxy.$store.commit("setUsername", result.data[0].username);
-          proxy.$store.commit("setUserPic", result.data[0].avator);
-          proxy.$store.commit("setToken", true);
-          // 跳转首页
-          changeIndex(NavName.Home);
-          routerManager(RouterName.Home, { path: RouterName.Home });
+          changeIndex(NavName.SignIn);
+          routerManager(RouterName.SignIn, { path: RouterName.SignIn });
         }
       } catch (error) {
         console.error(error);
-        (proxy as any).$message.error("登录失败，请检查账号密码");
-      } finally {
-        loginLoading.value = false;
       }
     }
 
-    // 第三方登录
-    function handleThirdLogin(type: string) {
-      (proxy as any).$message.info(`${type}登录功能开发中`);
-    }
-
-    // 注册跳转
-    function handleSignUp() {
-      routerManager(RouterName.SignUp, { path: RouterName.SignUp });
-    }
-
-    // 忘记密码跳转
-    function handleForgotPassword() {
-      routerManager(RouterName.ForgotPassword, { path: RouterName.ForgotPassword });
-    }
-
-    // 邮箱登录跳转
-    function handleEmail() {
-      routerManager(RouterName.loginByemail, { path: RouterName.loginByemail });
-    }
-
     return {
+      SignUpRules,
+      AREA,
       registerForm,
-      SignInRules,
-      loginLoading,
-      handleLoginIn,
-      handleThirdLogin,
-      handleForgotPassword,
-      handleEmail,
       handleSignUp,
+      goBackRegist,
     };
   },
 });
 </script>
 
 <style lang="scss" scoped>
-@import "@/assets/css/var.scss";
-
-// 整体容器
-.login-container {
-  min-height: 80vh;
+.register-container {
+  min-height: 100vh;
   display: flex;
   justify-content: center;
   align-items: center;
-  background: linear-gradient(135deg, #f5f7fa 0%, #e5e9f2 100%);
-  padding: 16px;
-}
+  background: #f5f7fa;
+  position: relative;
 
-// 登录卡片
-.login-box {
-  width: 100%;
-  max-width: 360px;
-  background-color: #fff;
-  border-radius: 12px;
-  box-shadow: 0 8px 24px rgba(0, 0, 0, 0.08);
-  overflow: hidden;
-  display: flex;
-  flex-direction: column;
-}
+  // 背景装饰
+  .bg-decoration {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image:
+        radial-gradient(circle at 20% 30%, rgba(64, 158, 255, 0.1) 0%, transparent 40%),
+        radial-gradient(circle at 80% 70%, rgba(64, 158, 255, 0.1) 0%, transparent 40%);
+    z-index: 0;
+  }
 
-// 头部区域
-.login-header {
-  padding: 20px 0;
-  text-align: center;
-  background: linear-gradient(90deg, #3b82f6 0%, #8b5cf6 100%);
+  .register-box {
+    width: 100%;
+    max-width: 500px; // 增加最大宽度以容纳更多内容
+    background: #fff;
+    border-radius: 12px;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.08);
+    overflow: hidden;
+    position: relative;
+    z-index: 1;
+    transition: transform 0.3s ease;
+    margin: 20px;
+    top: -80px;
 
-  .header-logo {
-    display: flex;
-    align-items: center;
-    justify-content: center;
-
-    .logo-icon {
-      font-size: 24px;
-      color: #fff;
-      margin-right: 8px;
-    }
-
-    .logo-text {
-      font-size: 20px;
-      font-weight: 600;
-      color: #fff;
+    &:hover {
+      transform: translateY(-5px);
+      box-shadow: 0 15px 35px rgba(0, 0, 0, 0.12);
     }
   }
-}
 
-// 主内容区
-.login-main {
-  padding: 24px 24px 16px;
-  flex: 1;
-
-  .login-title {
+  .register-header {
+    padding: 30px 20px;
+    background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+    color: #fff;
     text-align: center;
-    font-size: 18px;
-    font-weight: 500;
-    color: #334155;
-    margin: 0 0 16px;
+    position: relative;
+
+    .logo {
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      margin-bottom: 15px;
+      position: relative;
+      top: -15px;
+
+      h1 {
+        font-size: 26px; // 增大标题字号
+        margin: 0;
+        font-weight: 600;
+      }
+    }
   }
 
-  // 快捷登录
-  .quick-login {
-    margin-bottom: 16px;
+  .register-main {
+    padding: 30px 40px;
 
-    .login-desc {
-      text-align: center;
-      font-size: 12px;
-      color: #64748b;
-      margin-bottom: 12px;
+    // 标签样式调整
+    .el-form-item__label {
+      font-weight: 500;
+      color: #4a5568;
+    }
+
+    // 输入框统一大小
+    .el-input, .el-select, .el-date-editor, .el-textarea {
+      margin-top: 5px;
+    }
+
+    .el-input__inner, .el-textarea__inner {
+      border-radius: 8px;
+      transition: all 0.3s ease;
+
+      &:focus {
+        border-color: #409EFF;
+        box-shadow: 0 0 0 2px rgba(64, 158, 255, 0.2);
+      }
+    }
+  }
+
+  // 按钮区域样式
+  .button-footer {
+    padding-top: 20px;
+    margin-top: 15px;
+    border-top: 1px solid #edf2f7;
+
+    .sign-btn {
+      margin-bottom: 0;
     }
 
     .button-group {
       display: flex;
-      justify-content: center;
-      gap: 16px;
-    }
-
-    .social-btn {
-      width: 40px;
-      height: 40px;
-      border-radius: 50%;
-      padding: 0;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      font-size: 18px;
-      border: none;
-      transition: all 0.2s ease;
-
-      &:hover {
-        transform: scale(1.05);
-      }
-    }
-
-    .qq-btn {
-      background-color: #1da1f2;
-      color: #fff;
-    }
-
-    .wx-btn {
-      background-color: #25d366;
-      color: #fff;
-    }
-
-    .email-btn {
-      background-color: #f59e0b;
-      color: #fff;
-    }
-  }
-
-  // 分隔线
-  .separator {
-    display: flex;
-    align-items: center;
-    margin: 16px 0;
-
-    .line {
-      flex: 1;
-      height: 1px;
-      background-color: #e2e8f0;
-    }
-
-    .text {
-      padding: 0 12px;
-      font-size: 11px;
-      color: #94a3b8;
-    }
-  }
-
-  // 登录表单
-  .login-form {
-    width: 100%;
-
-    .form-item {
-      margin-bottom: 12px;
-    }
-
-    .form-input {
-      height: 40px;
-      border-radius: 6px;
-      border-color: #e2e8f0;
-      font-size: 13px;
-
-      &:focus-within {
-        border-color: #3b82f6;
-        box-shadow: 0 0 0 2px rgba(59, 130, 246, 0.1);
-      }
-    }
-
-    .login-submit {
+      justify-content: center; /* 修改为居中布局 */
       width: 100%;
-      height: 40px;
-      font-size: 14px;
-      border-radius: 6px;
-      background-color: #3b82f6;
-      border: none;
-      transition: all 0.2s ease;
+      gap: 20px;
+      max-width: 400px; /* 设置最大宽度 */
+      margin: 0 auto; /* 水平居中 */
+    }
 
-      &:hover {
-        background-color: #2563eb;
+    .cancel-btn,
+    .confirm-btn {
+      flex: 0 0 calc(50% - 10px); /* 固定宽度并考虑间隙 */
+      max-width: 200px; /* 最大宽度限制 */
+      height: 44px;
+      font-size: 16px;
+      border-radius: 8px;
+      transition: all 0.3s ease;
+      margin-right: 70px;
+
+      /* 保持原有的取消按钮样式 */
+      &.cancel-btn {
+        background-color: #f8fafc;
+        border: 1px solid #e2e8f0;
+        color: #4a5568;
+
+        &:hover {
+          background-color: #edf2f7;
+          border-color: #cbd5e0;
+          color: #2d3748;
+        }
       }
 
-      &:active {
-        background-color: #1d4ed8;
+      /* 保持原有的确定按钮样式 */
+      &.confirm-btn {
+        background: linear-gradient(90deg, #3b82f6, #8b5cf6);
+        border: none;
+        box-shadow: 0 4px 12px rgba(123, 97, 255, 0.25);
+
+        &:hover {
+          background: linear-gradient(90deg, #2563eb, #7c3aed);
+          box-shadow: 0 6px 14px rgba(123, 97, 255, 0.35);
+          transform: translateY(-2px);
+        }
       }
     }
   }
 }
 
-// 底部区域
-.login-footer {
-  padding: 12px 0;
-  background-color: #f8fafc;
-  border-top: 1px solid #f1f5f9;
-
-  .footer-links {
-    display: flex;
-    justify-content: center;
-    align-items: center;
+// 响应式调整
+@media (max-width: 576px) {
+  .register-container {
+    padding: 15px;
   }
 
-  .link-btn {
-    color: #3b82f6;
-    font-size: 12px;
-    padding: 4px 8px;
-    transition: color 0.2s ease;
+  .register-box {
+    width: 100%;
+    max-width: 100%;
+  }
 
-    &:hover {
-      color: #2563eb;
-      background-color: transparent;
+  .register-main {
+    padding: 20px;
+
+    // 标签宽度在小屏幕上调整
+    :deep(.el-form-item__label) {
+      width: auto !important;
+      text-align: left;
+      padding-right: 12px;
+      margin-bottom: 6px;
+    }
+
+    // 表单元素在小屏幕上100%宽度
+    .el-input, .el-select, .el-date-editor {
+      width: 100%;
     }
   }
 
-  .split {
-    color: #cbd5e1;
-    margin: 0 4px;
-  }
-}
+  .button-group {
+    flex-direction: column;
+    gap: 12px !important;
 
-// 响应式适配
-@media (max-width: 480px) {
-  .login-box {
-    max-width: 320px;
-  }
-
-  .login-main {
-    padding: 20px 16px 12px;
-  }
-
-  .social-btn {
-    width: 36px;
-    height: 36px;
-    font-size: 16px;
+    .cancel-btn, .confirm-btn {
+      width: 100%;
+    }
   }
 }
 </style>
