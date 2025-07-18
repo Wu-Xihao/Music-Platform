@@ -14,7 +14,7 @@
     <el-table height="600px" border size="small" :data="data" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="40"></el-table-column>
       <el-table-column label="ID" prop="id" width="50" align="center"></el-table-column>
-      <el-table-column label="歌手图片" width="110" align="center">
+      <el-table-column label="歌曲图片" width="110" align="center">
         <template v-slot="scope">
           <div class="image-container">
             <div class="image-wrapper">
