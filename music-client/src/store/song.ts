@@ -18,6 +18,7 @@ export default {
     curTime: 0, // 当前音乐的播放位置
     changeTime: 0, // 指定播放时刻
     autoNext: true, // 用于触发自动播放下一首
+    isDragging: false,
 
     /** 音乐列表信息 */
     currentPlayList: [], // 当前播放列表
@@ -42,6 +43,7 @@ export default {
     curTime: (state) => state.curTime,
     changeTime: (state) => state.changeTime,
     autoNext: (state) => state.autoNext,
+    isDragging: (state)=> state.isDragging,
 
     currentPlayList: (state) => state.currentPlayList,
     songDetails: (state) => state.songDetails,
@@ -89,6 +91,9 @@ export default {
     },
     setChangeTime: (state, changeTime) => {
       state.changeTime = changeTime;
+    },
+    setIsDragging(state, value) {
+      state.isDragging = value // 设置拖拽状态
     },
 
     setCurrentPlayList: (state, currentPlayList) => {
