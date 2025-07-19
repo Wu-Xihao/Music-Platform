@@ -1,9 +1,25 @@
 <template>
-  <audio controls="controls" preload="true" v-if="url" :ref="player" :src="attachImageUrl(url)" @canplay="startPlay" @ended="ended"></audio>
+  <button
+      v-if="showActivationButton"
+      class="audio-activator"
+      @click="activateAudio"
+  >
+    点击激活音频播放
+  </button>
+  <audio
+      v-show="!showActivationButton"
+      controls="controls"
+      preload="true"
+      v-if="url"
+      :ref="player"
+      :src="attachImageUrl(url)"
+      @canplay="startPlay"
+      @ended="ended"
+  ></audio>
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, computed, watch, ref } from "vue";
+import { defineComponent, getCurrentInstance, computed, watch, ref, onMounted } from "vue";
 import { useStore } from "vuex";
 import { HttpManager } from "@/api";
 
@@ -16,32 +32,69 @@ export default defineComponent({
       divRef.value = el;
     };
 
-    const url = computed(() => store.getters.url); // 音乐链接
-    const isPlay = computed(() => store.getters.isPlay); // 播放状态
-    // 监听播放还是暂停
+    // 新增：用户交互状态
+    const userInteracted = ref(false);
+    const showActivationButton = ref(true);
+
+    // 检测用户交互
+    onMounted(() => {
+      const handleInteraction = () => {
+        userInteracted.value = true;
+        showActivationButton.value = false;
+        window.removeEventListener('click', handleInteraction);
+        window.removeEventListener('touchstart', handleInteraction);
+      };
+
+      window.addEventListener('click', handleInteraction);
+      window.addEventListener('touchstart', handleInteraction);
+    });
+
+    const url = computed(() => store.getters.url);
+    const isPlay = computed(() => store.getters.isPlay);
+
     watch(isPlay, () => {
       togglePlay();
     });
 
-    // 开始/暂停
-    function togglePlay() {
-      isPlay.value ? divRef.value.play() : divRef.value.pause();
+    function activateAudio() {
+      userInteracted.value = true;
+      showActivationButton.value = false;
+      // 立即尝试播放（如果需要）
+      if (isPlay.value && divRef.value) {
+        divRef.value.play().catch(e => console.log("播放请求被拒绝:", e));
+      }
     }
 
-    // 获取歌曲链接后准备播放
-    function startPlay() {
-      divRef.value.play();
+    function togglePlay() {
+      if (!userInteracted.value || !divRef.value) return;
+
+      try {
+        isPlay.value ? divRef.value.play() : divRef.value.pause();
+      } catch (e) {
+        console.error("播放控制错误:", e);
+      }
     }
-    // 音乐播放结束时触发
+
+    function startPlay() {
+      if (userInteracted.value && isPlay.value && divRef.value) {
+        divRef.value.play().catch(e => {
+          console.log("自动播放被阻止，需要用户交互");
+        });
+      }
+    }
+
     function ended() {
       proxy.$store.commit("setIsPlay", false);
     }
+
     return {
       url,
       isPlay,
       player,
       startPlay,
       ended,
+      showActivationButton,
+      activateAudio,
       attachImageUrl: HttpManager.attachImageUrl,
     };
   },
@@ -51,5 +104,18 @@ export default defineComponent({
 <style>
 audio {
   display: none;
+}
+
+.audio-activator {
+  position: fixed;
+  bottom: 20px;
+  right: 20px;
+  padding: 10px 20px;
+  background: #42b983;
+  color: white;
+  border: none;
+  border-radius: 4px;
+  cursor: pointer;
+  z-index: 1000;
 }
 </style>

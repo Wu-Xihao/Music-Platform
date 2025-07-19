@@ -135,31 +135,16 @@ public class SongServiceImpl extends ServiceImpl<SongMapper, Song> implements So
 
     @Override
     public R updateSongPic(MultipartFile urlFile, int id) {
-        try {
-            String fileName = urlFile.getOriginalFilename();
-            String storeUrlPath = "/music/singer/song/" + fileName;
-            MinioUploadController.uploadSongImgFile(urlFile);
-
-            // 检查图片文件是否成功上传
-            if (!isFileExistsInMinio(fileName)) {
-                return R.error("图片文件未成功上传到MinIO");
-            }
-
-            Song song = new Song();
-            song.setId(id);
-            song.setPic(storeUrlPath);
-
-            if (songMapper.updateById(song) > 0) {
-                // 验证URL格式
-                if (!isValidUrlFormat(storeUrlPath)) {
-                    return R.error("生成的URL格式不正确");
-                }
-                return R.success("上传成功", storeUrlPath);
-            } else {
-                return R.error("上传失败");
-            }
-        } catch (Exception e) {
-            return R.error("上传过程中发生异常: " + e.getMessage());
+        String fileName =  urlFile.getOriginalFilename();
+        String storeUrlPath = "/music/singer/song/" + fileName;
+        MinioUploadController.uploadSongImgFile(urlFile);
+        Song song = new Song();
+        song.setId(id);
+        song.setPic(storeUrlPath);
+        if (songMapper.updateById(song) > 0) {
+            return R.success("上传成功", storeUrlPath);
+        } else {
+            return R.error("上传失败");
         }
     }
 

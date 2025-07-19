@@ -26,13 +26,25 @@
         <el-icon class="menu-icon"><Document /></el-icon>
         <span class="menu-text">歌单管理</span>
       </el-menu-item>
+      <el-menu-item index="AllSongs">
+        <el-icon class="menu-icon"><Headset /></el-icon>
+        <span class="menu-text">歌曲管理</span>
+      </el-menu-item>
+      <el-menu-item index="Collect">
+        <el-icon class="menu-icon"><Star /></el-icon>
+        <span class="menu-text">收藏管理</span>
+      </el-menu-item>
+      <el-menu-item index="Banner">
+        <el-icon class="menu-icon"><Star /></el-icon>
+        <span class="menu-text">轮播图管理</span>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>
 
 <script lang="ts" setup>
 import { ref, onMounted, onBeforeUnmount } from "vue";
-import { PieChart, Mic, Document, User } from "@element-plus/icons-vue";
+import { PieChart, Mic, Document, User, Headset, Star } from "@element-plus/icons-vue";
 import emitter from "@/utils/emitter";
 
 const collapse = ref(false);

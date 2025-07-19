@@ -19,14 +19,34 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import("@/views/Home.vue"),
       },
       {
-        path: "/sign-in",
-        name: "sign-in",
-        component: () => import("@/views/SignIn.vue"),
-      },
-      {
-        path: "/sign-up",
-        name: "sign-up",
-        component: () => import("@/views/SignUp.vue"),
+        path:"/auth",
+        component:()=>import("@/views/animation/pageChange.vue"),
+        children:[
+          {
+            path: "/sign-in",
+            name: "sign-in",
+            component: () => import("@/views/SignIn.vue"),
+            meta: {index: 1}
+          },
+          {
+            path: "/sign-up",
+            name: "sign-up",
+            component: () => import("@/views/SignUp.vue"),
+            meta: {index: 2}
+          },
+          {
+            path: "/FPassword",
+            name: "FPassword",
+            component: () => import("@/views/FPassword.vue"),
+            meta: {index: 3}
+          },
+          {
+            path: "/loginByemail",
+            name: "loginByemail",
+            component: () => import("@/views/loginByemail.vue"),
+            meta: {index: 4}
+          }
+        ]
       },
       {
         path: "/personal",
@@ -70,16 +90,6 @@ const routes: Array<RouteRecordRaw> = [
         path: "/personal-data",
         name: "personal-data",
         component: () => import("@/views/setting/PersonalData.vue"),
-      },
-      {
-        path: "/FPassword",
-        name: "FPassword",
-        component: ()=> import("@/views/FPassword.vue"),
-      },
-      {
-        path: "/loginByemail",
-        name: "loginByemail",
-        component: ()=> import("@/views/loginByemail.vue"),
       },
       {
         path: "/setting",

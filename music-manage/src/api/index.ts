@@ -90,8 +90,24 @@ const HttpManager = {
     // 返回歌单里指定歌单ID的歌曲
     getListSongOfSongId: (songListId) => get(`listSong/detail?songListId=${songListId}`),
     // 删除歌单里的歌曲
-    deleteListSong: (songId) => get(`listSong/delete?songId=${songId}`)
+    deleteListSong: (songId) => get(`listSong/delete?songId=${songId}`),
 
+
+    // =======================> 轮播图 API
+    // 返回所有轮播图信息
+    getAllBanner: () => get(`banner/getAllBanner`),
+    //添加轮播图
+
+    //更新轮播图
+
+    //删除轮播图
+
+    // 删除轮播图
+    deleteBanner: (id) => deletes(`banner/deleteBanner/${id}`),
+    // 添加轮播图的URL
+    addCarouselUrl: `${getBaseURL()}/banner/addBanner`,
+    // 更新轮播图的URL
+    updateCarouselUrl: (id) => `${getBaseURL()}/banner/updateBannerImg/${id}`
 }
 
 export {HttpManager}

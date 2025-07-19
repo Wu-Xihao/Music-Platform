@@ -18,11 +18,15 @@ export default {
     curTime: 0, // 当前音乐的播放位置
     changeTime: 0, // 指定播放时刻
     autoNext: true, // 用于触发自动播放下一首
+    isDragging: false,
 
     /** 音乐列表信息 */
     currentPlayList: [], // 当前播放列表
     songDetails: null, // 单个歌单信息
     currentPlayIndex: -1, // 当前歌曲在歌曲列表的位置
+
+    /** 音频元素 */
+    audioElement: null, // 音频元素
   },
   getters: {
     songId: (state) => state.songId,
@@ -39,10 +43,13 @@ export default {
     curTime: (state) => state.curTime,
     changeTime: (state) => state.changeTime,
     autoNext: (state) => state.autoNext,
+    isDragging: (state)=> state.isDragging,
 
     currentPlayList: (state) => state.currentPlayList,
     songDetails: (state) => state.songDetails,
     currentPlayIndex: (state) => state.currentPlayIndex,
+
+    audioElement: (state) => state.audioElement, // 添加 getter
   },
   mutations: {
     setSongId: (state, songId) => {
@@ -85,6 +92,9 @@ export default {
     setChangeTime: (state, changeTime) => {
       state.changeTime = changeTime;
     },
+    setIsDragging(state, value) {
+      state.isDragging = value // 设置拖拽状态
+    },
 
     setCurrentPlayList: (state, currentPlayList) => {
       state.currentPlayList = currentPlayList;
@@ -95,6 +105,10 @@ export default {
     setCurrentPlayIndex: (state, currentPlayIndex) => {
       state.currentPlayIndex = currentPlayIndex;
     },
+
+    setAudioElement(state, element) {
+      state.audioElement = element;
+    }
   },
   actions: {
     playMusic: ({ commit }, { id, url, pic, index, songTitle, singerName, lyric, currentSongList }) => {
