@@ -51,6 +51,11 @@ const routes: Array<RouteRecordRaw> = [
         component: () => import('@/views/AllSongsPage.vue'),
         meta: { title: 'AllSongs' }
       },
+      {
+        path: '/Banner',
+        component: () => import('@/views/BannerPage.vue'),
+        meta: { title: 'Banner' }
+      },
     ]
   },
   {

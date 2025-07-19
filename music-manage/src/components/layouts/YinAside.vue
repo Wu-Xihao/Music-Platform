@@ -34,6 +34,10 @@
         <el-icon class="menu-icon"><Star /></el-icon>
         <span class="menu-text">收藏管理</span>
       </el-menu-item>
+      <el-menu-item index="Banner">
+        <el-icon class="menu-icon"><Star /></el-icon>
+        <span class="menu-text">轮播图管理</span>
+      </el-menu-item>
     </el-menu>
   </div>
 </template>
