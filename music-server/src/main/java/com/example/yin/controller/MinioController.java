@@ -114,4 +114,21 @@ public class MinioController {
 
         return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
+
+    @GetMapping("music/img/banner/{fileName:.+}")
+    public ResponseEntity<byte[]> getImage4(@PathVariable String fileName) throws Exception {
+        InputStream stream = minioClient.getObject(
+                GetObjectArgs.builder()
+                        .bucket(bucketName)
+                        .object("img/banner/"+fileName)
+                        .build()
+        );
+
+        byte[] bytes = IOUtils.toByteArray(stream);
+
+        HttpHeaders headers = new HttpHeaders();
+        headers.setContentType(MediaType.IMAGE_JPEG);
+
+        return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
+    }
 }

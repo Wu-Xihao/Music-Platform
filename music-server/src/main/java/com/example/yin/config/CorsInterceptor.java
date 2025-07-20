@@ -15,6 +15,12 @@ public class CorsInterceptor extends HandlerInterceptorAdapter {
         response.setHeader("Access-Control-Max-Age", "3600");
         response.setHeader("Access-Control-Allow-Headers", "x_requested_with,x-requested-with,Authorization,Content-Type,token");
         response.setHeader("Access-Control-Allow-Credentials", "true");
+
+        if ("OPTIONS".equalsIgnoreCase(request.getMethod())) {
+            response.setStatus(HttpServletResponse.SC_OK);  // 返回 200
+            return false; // 阻止继续进入 Controller
+        }
+
         return true;
     }
 }
