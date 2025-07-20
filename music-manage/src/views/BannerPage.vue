@@ -22,7 +22,7 @@
         height="600px"
         border
         size="small"
-        :data="tableData"
+        :data="data"
         @selection-change="handleSelectionChange"
     >
       <el-table-column type="selection" width="40" align="center"></el-table-column>
@@ -58,19 +58,6 @@
 
       <el-table-column label="操作" width="200" align="center">
         <template v-slot="scope">
-          <!-- 更新图片按钮 - 改进上传组件 -->
-          <el-upload
-              :action="'http://localhost:8888/banner/updateBannerImg/' + scope.row.id"
-              :show-file-list="false"
-              :on-success="handleUpdateSuccess"
-              :on-error="handleUploadError"
-              :on-progress="handleUploadProgress"
-              :before-upload="beforeUpload"
-              :headers="uploadHeaders"
-          >
-            <el-button type="warning" size="small">更换图片</el-button>
-          </el-upload>
-
           <el-button
               type="danger"
               size="small"
@@ -94,11 +81,23 @@
         @confirm="confirm"
         @cancel="delVisible = false"
     ></yin-del-dialog>
+
+    <!-- 分页组件 -->
+    <el-pagination
+        class="pagination"
+        background
+        layout="total, prev, pager, next"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :total="tableData.length"
+        @current-change="handleCurrentChange"
+    >
+    </el-pagination>
   </div>
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, ref, reactive, onMounted } from "vue";
+import { defineComponent, getCurrentInstance, ref, reactive, onMounted, computed } from "vue";
 import mixin from "@/mixins/mixin";
 import { HttpManager } from "@/api";
 import YinDelDialog from "@/components/dialog/YinDelDialog.vue";
@@ -128,6 +127,14 @@ export default defineComponent({
     const uploadPercentage = ref(0); // 上传进度百分比
     const imageLoadErrors = ref<number[]>([]); // 图片加载失败的ID列表
 
+    const pageSize = ref(5); // 每页显示数量
+    const currentPage = ref(1); // 当前页码
+
+    // 计算当前表格中的数据
+    const data = computed(() => {
+      return tableData.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
+    });
+
     // 上传请求头（如果需要认证）
     const uploadHeaders = ref({
       // 'Authorization': `Bearer ${localStorage.getItem('token')}`
@@ -144,6 +151,7 @@ export default defineComponent({
         const result = (await HttpManager.getAllBanner()) as ResponseData;
         tableData.value = result.data;
         tempData.value = result.data;
+        currentPage.value = 1; // 重置页码
         // 清空图片加载错误列表
         imageLoadErrors.value = [];
       } catch (error) {
@@ -197,7 +205,7 @@ export default defineComponent({
       uploading.value = false;
       uploadPercentage.value = 0;
 
-      if (response.code === 0) {
+      if (response.code === 200) {
         ElMessage.success("添加成功");
         getBannerData(); // 刷新列表
       } else {
@@ -281,9 +289,18 @@ export default defineComponent({
       multipleSelection.value = selection;
     }
 
+    // 获取当前页
+    function handleCurrentChange(val) {
+      currentPage.value = val;
+    }
+
     return {
+      searchWord: ref(""),
+      data,
       tableData,
       delVisible,
+      pageSize,
+      currentPage,
       multipleSelection,
       getBannerData,
       beforeUpload,
@@ -302,7 +319,8 @@ export default defineComponent({
       uploadData,
       handleUploadProgress,
       handleUploadError,
-      handleImageError
+      handleImageError,
+      handleCurrentChange
     };
   },
 });
@@ -339,5 +357,9 @@ export default defineComponent({
 
 .upload-progress {
   margin: 10px 0;
+}
+
+.pagination {
+  margin-top: 20px;
 }
 </style>

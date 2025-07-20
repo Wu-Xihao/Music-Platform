@@ -104,10 +104,11 @@ const HttpManager = {
 
     // 删除轮播图
     deleteBanner: (id) => deletes(`banner/deleteBanner/${id}`),
+    updateBannerImg: (id) => `${getBaseURL()}/banner/updateBannerImg/${id}`,
     // 添加轮播图的URL
-    addCarouselUrl: `${getBaseURL()}/banner/addBanner`,
+    // addCarouselUrl: `${getBaseURL()}/banner/addBanner`,
     // 更新轮播图的URL
-    updateCarouselUrl: (id) => `${getBaseURL()}/banner/updateBannerImg/${id}`
+    // updateCarouselUrl: (id) => `${getBaseURL()}/banner/updateBannerImg/${id}`
 }
 
 export {HttpManager}
