@@ -10,7 +10,7 @@
       <el-button @click="deleteAll">批量删除</el-button>
       <el-input placeholder="筛选收藏信息" v-model="searchWord"></el-input>
     </div>
-    <el-table height="600px" border size="small" :data="tableData" @selection-change="handleSelectionChange">
+    <el-table height="600px" border size="small" :data="data" @selection-change="handleSelectionChange">
       <el-table-column type="selection" width="40" align="center"></el-table-column>
       <el-table-column prop="collector" label="收藏者ID"></el-table-column>
       <el-table-column prop="collectionName" label="收藏内容"></el-table-column>
@@ -26,6 +26,17 @@
         </template>
       </el-table-column>
     </el-table>
+    <!-- 分页组件 -->
+    <el-pagination
+        class="pagination"
+        background
+        layout="total, prev, pager, next"
+        :current-page="currentPage"
+        :page-size="pageSize"
+        :total="tableData.length"
+        @current-change="handleCurrentChange"
+    >
+    </el-pagination>
   </div>
 
   <!-- 删除提示框 -->
@@ -78,6 +89,16 @@ export default defineComponent({
           }
         }
       }
+      // 搜索时重置页码
+      currentPage.value = 1;
+    });
+
+    const pageSize = ref(5); // 每页显示数量
+    const currentPage = ref(1); // 当前页码
+
+    // 计算当前表格中的数据
+    const data = computed(() => {
+      return tableData.value.slice((currentPage.value - 1) * pageSize.value, currentPage.value * pageSize.value);
     });
 
     getData();
@@ -103,6 +124,8 @@ export default defineComponent({
           tempDate.value.push(item);
         }
       }
+      // 获取数据后重置页码
+      currentPage.value = 1;
     }
 
     /**
@@ -142,24 +165,33 @@ export default defineComponent({
     const formatDate = (timestamp: number) => {
       const date = new Date(timestamp);
       const year = date.getFullYear();
-      const month = String(date.getMonth() + 1).padStart(2, '0');
-      const day = String(date.getDate()).padStart(2, '0');
-      const hours = String(date.getHours()).padStart(2, '0');
-      const minutes = String(date.getMinutes()).padStart(2, '0');
-      const seconds = String(date.getSeconds()).padStart(2, '0');
+      const month = String(date.getMonth() + 1).padStart(2, "0");
+      const day = String(date.getDate()).padStart(2, "0");
+      const hours = String(date.getHours()).padStart(2, "0");
+      const minutes = String(date.getMinutes()).padStart(2, "0");
+      const seconds = String(date.getSeconds()).padStart(2, "0");
       return `${year}-${month}-${day} ${hours}:${minutes}:${seconds}`;
     };
 
+    // 处理页码变化
+    function handleCurrentChange(val) {
+      currentPage.value = val;
+    }
+
     return {
       searchWord,
+      data,
       tableData,
       delVisible,
       breadcrumbList,
+      pageSize,
+      currentPage,
       deleteAll,
       handleSelectionChange,
       deleteRow,
       confirm,
       formatDate,
+      handleCurrentChange,
     };
   },
 });
