@@ -45,7 +45,17 @@ const routes: Array<RouteRecordRaw> = [
         path: '/Collect',
         component: () => import('@/views/CollectPage.vue'),
         meta: { title: 'Collect' }
-      }
+      },
+      {
+        path: '/AllSongs',
+        component: () => import('@/views/AllSongsPage.vue'),
+        meta: { title: 'AllSongs' }
+      },
+      {
+        path: '/Banner',
+        component: () => import('@/views/BannerPage.vue'),
+        meta: { title: 'Banner' }
+      },
     ]
   },
   {

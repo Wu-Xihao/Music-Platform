@@ -1,11 +1,15 @@
 <template>
-  <audio :src="attachImageUrl(songUrl)" controls="controls" :ref="player" preload="true" @canplay="canplay" @timeupdate="timeupdate" @ended="ended">
-    <!--（1）属性：controls，preload（2）事件：canplay，timeupdate，ended（3）方法：play()，pause() -->
-    <!--controls：向用户显示音频控件（播放/暂停/进度条/音量）-->
-    <!--preload：属性规定是否在页面加载后载入音频-->
-    <!--canplay：当音频/视频处于加载过程中时，会发生的事件-->
-    <!--timeupdate：当目前的播放位置已更改时-->
-    <!--ended：当目前的播放列表已结束时-->
+  <audio
+      :src="attachImageUrl(songUrl)"
+      autoplay
+      controls="controls"
+      :ref="player"
+      preload="none"
+      @canplay="canplay"
+      @timeupdate="timeupdate"
+      @ended="ended"
+      @loadedmetadata="onLoadedmetadata"
+  >
   </audio>
 </template>
 
@@ -17,7 +21,6 @@ import { onMounted } from 'vue';
 
 export default defineComponent({
   setup() {
-
     const { proxy } = getCurrentInstance();
     const store = useStore();
     const divRef = ref<HTMLAudioElement>();
@@ -25,62 +28,80 @@ export default defineComponent({
       divRef.value = el;
     };
 
-     const muted = ref(true); // 添加一个 reactive 的 muted 属性
+    const muted = ref(true);
 
     const audioDom = document.querySelector('audio');
     if (audioDom) {
-      // 设置为静音并尝试自动播放
       audioDom.muted = true;
       audioDom.play()
-        .then(() => {
-          // 自动播放成功
-        })
-        .catch(error => {
-          // 自动播放失败，可能是因为没有用户交互
-          console.error('自动播放失败，需要用户交互。', error);
-        });
+          .then(() => {
+            //
+          })
+          .catch(error => {
+            console.error('自动播放失败，需要用户交互。', error);
+          });
     }
 
+    const songUrl = computed(() => store.getters.songUrl);
+    const isPlay = computed(() => store.getters.isPlay);
+    const volume = computed(() => store.getters.volume);
+    const changeTime = computed(() => store.getters.changeTime);
+    const autoNext = computed(() => store.getters.autoNext);
 
-    const songUrl = computed(() => store.getters.songUrl); // 音乐链接
-    const isPlay = computed(() => store.getters.isPlay); // 播放状态
-    const volume = computed(() => store.getters.volume); // 音量
-    const changeTime = computed(() => store.getters.changeTime); // 指定播放时刻
-    const autoNext = computed(() => store.getters.autoNext); // 用于触发自动播放下一首
-    // 监听播放还是暂停
     watch(isPlay, () => togglePlay());
-    // 跳到指定时刻播放
-    watch(changeTime, () => (divRef.value.currentTime = changeTime.value));
+    watch(changeTime, (value) => {
+      if (divRef.value && !isNaN(value)) {
+        // 添加阈值检查，避免微小变化触发重新定位
+        divRef.value.currentTime = value;
+        console.log(value);
+        console.log(changeTime.value);
+        console.log(store.getters.duration);
+      }
+    });
     watch(volume, (value) => (divRef.value.volume = value));
 
-    // 开始 / 暂停
     function togglePlay() {
       isPlay.value ? divRef.value.play() : divRef.value.pause();
     }
-    // 获取歌曲链接后准备播放
+
+    function onLoadedmetadata(res) {
+      console.log(parseInt(res.target.duration))
+      proxy.$store.commit("setDuration", parseInt(res.target.duration));
+    }
+
     function canplay() {
-      //  记录音乐时长
       proxy.$store.commit("setDuration", divRef.value.duration);
-      //  开始播放
       if (muted.value) {
-        divRef.value.muted = false;
-        muted.value = false;
+        divRef.value.muted = true;
+        divRef.value.play()
+            .then(() => {
+              proxy.$store.commit("setIsPlayed", true);
+            })
+            .catch((err) => {
+              console.log("静音自动播放被阻止:", err);
+            });
       }
-      // divRef.value.play();
-      proxy.$store.commit("setIsPlay", true);
+      proxy.$store.commit("setIsPlayed", true);
     }
-    // 音乐播放时记录音乐的播放位置
+
     function timeupdate() {
-      proxy.$store.commit("setCurTime", divRef.value.currentTime);
+      if (!store.getters.isDragging) {
+        proxy.$store.commit("setCurTime", divRef.value.currentTime);
+      }
     }
-    // 音乐播放结束时触发
+
     function ended() {
-      proxy.$store.commit("setIsPlay", false);
+      proxy.$store.commit("setIsPlayed", false);
       proxy.$store.commit("setCurTime", 0);
       proxy.$store.commit("setAutoNext", !autoNext.value);
     }
 
-
+    document.addEventListener('click', () => {
+      if (divRef.value && muted.value) {
+        divRef.value.muted = false;
+        muted.value = false;
+      }
+    }, { once: true });
 
     return {
       songUrl,
@@ -88,6 +109,7 @@ export default defineComponent({
       canplay,
       timeupdate,
       ended,
+      onLoadedmetadata,
       muted,
       attachImageUrl: HttpManager.attachImageUrl,
     };

@@ -1,7 +1,11 @@
 <template>
+  <!-- 复用文档1的template部分，但调整面包屑导航 -->
   <el-breadcrumb class="crumbs" separator="/">
-    <el-breadcrumb-item v-for="item in breadcrumbList" :key="item.name" :to="{ path: item.path, query: item.query }">
-      {{ item.name }}
+    <el-breadcrumb-item :to="{ path: '/Home' }">
+      系统首页
+    </el-breadcrumb-item>
+    <el-breadcrumb-item>
+      所有歌曲
     </el-breadcrumb-item>
   </el-breadcrumb>
 
@@ -37,11 +41,11 @@
               {{ item }}
             </li>
           </ul>
-<!--          <ul style="height: 100px; overflow: scroll">-->
-<!--            <li v-for="(item, index) in parseLyric(scope.row.lyric)" :key="index">-->
-<!--              {{ item }}-->
-<!--            </li>-->
-<!--          </ul>-->
+          <!--          <ul style="height: 100px; overflow: scroll">-->
+          <!--            <li v-for="(item, index) in parseLyric(scope.row.lyric)" :key="index">-->
+          <!--              {{ item }}-->
+          <!--            </li>-->
+          <!--          </ul>-->
         </template>
       </el-table-column>
       <el-table-column label="资源更新" width="120" align="center">
@@ -136,18 +140,16 @@
 </template>
 
 <script lang="ts">
-import { defineComponent, getCurrentInstance, watch, ref, reactive, computed } from "vue";
+import {defineComponent, getCurrentInstance, ref, computed, watch, reactive} from "vue";
 import { useStore } from "vuex";
 import mixin from "@/mixins/mixin";
-import { Icon, RouterName } from "@/enums";
 import { HttpManager } from "@/api";
-import { parseLyric } from "@/utils";
 import YinDelDialog from "@/components/dialog/YinDelDialog.vue";
+import {Icon, RouterName} from "@/enums";
+import {parseLyric} from "@/utils";
 
 export default defineComponent({
-  components: {
-    YinDelDialog,
-  },
+  components: { YinDelDialog },
   setup() {
     const { proxy } = getCurrentInstance();
     const { routerManager, beforeImgUpload, beforeSongUpload } = mixin();
@@ -192,9 +194,7 @@ export default defineComponent({
 
     // 获取歌曲
     async function getData() {
-      tableData.value = [];
-      tempDate.value = [];
-      const result = (await HttpManager.getSongOfSingerId(singerId.value)) as ResponseBody;
+      const result = await HttpManager.getAllSong() as ResponseBody;
       tableData.value = result.data;
       tempDate.value = result.data;
       currentPage.value = 1;
@@ -429,6 +429,7 @@ export default defineComponent({
     };
   },
 });
+
 </script>
 
 <style scoped>

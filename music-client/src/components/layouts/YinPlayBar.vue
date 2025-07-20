@@ -8,9 +8,9 @@
     <div class="control-box">
       <div class="info-box">
         <!--歌曲图片-->
-      <div @click="goPlayerPage">
-         <el-image class="song-bar-img" fit="contain"/>
-      </div>
+        <div @click="goPlayerPage">
+          <el-image class="song-bar-img" fit="contain"/>
+        </div>
         <!--播放开始结束时间-->
         <div v-if="songId">
           <div class="song-info">{{ this.songTitle }} - {{ this.singerName }}</div>

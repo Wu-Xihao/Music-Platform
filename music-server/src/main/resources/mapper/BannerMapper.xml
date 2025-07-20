@@ -1,15 +1,47 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<!DOCTYPE mapper
-        PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
+<!DOCTYPE mapper PUBLIC "-//mybatis.org//DTD Mapper 3.0//EN"
         "http://mybatis.org/dtd/mybatis-3-mapper.dtd">
 <mapper namespace="com.example.yin.mapper.BannerMapper">
 
     <resultMap id="BaseResultMap" type="com.example.yin.model.domain.Banner">
-            <id property="id" column="id" jdbcType="INTEGER"/>
-            <result property="pic" column="pic" jdbcType="VARCHAR"/>
+        <id property="id" column="id" jdbcType="INTEGER"/>
+        <result property="pic" column="pic" jdbcType="VARCHAR"/>
     </resultMap>
 
     <sql id="Base_Column_List">
-        id,pic
+        id, pic
     </sql>
+
+    <!-- 新增轮播图 -->
+    <insert id="insert" parameterType="com.example.yin.model.domain.Banner"
+            useGeneratedKeys="true" keyProperty="id">
+        INSERT INTO banner(pic)
+        VALUES(#{pic})
+    </insert>
+
+    <!-- 根据ID删除 -->
+    <delete id="deleteById" parameterType="int">
+        DELETE FROM banner
+        WHERE id = #{id}
+    </delete>
+
+    <!-- 根据ID更新 -->
+    <update id="updateById" parameterType="com.example.yin.model.domain.Banner">
+        UPDATE banner
+        SET pic = #{pic}
+        WHERE id = #{id}
+    </update>
+
+    <!-- 根据ID查询 -->
+    <select id="selectById" resultMap="BaseResultMap" parameterType="int">
+        SELECT <include refid="Base_Column_List"/>
+        FROM banner
+        WHERE id = #{id}
+    </select>
+
+    <!-- 查询所有轮播图 -->
+    <select id="selectList" resultMap="BaseResultMap" parameterType="map">
+        SELECT <include refid="Base_Column_List"/>
+        FROM banner
+    </select>
 </mapper>
