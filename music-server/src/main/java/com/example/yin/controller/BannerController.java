@@ -31,7 +31,7 @@ public class BannerController {
     }
 
     @PostMapping("/updateBannerImg/{id}")
-    public R updateBannerImg(@RequestParam("file") MultipartFile file, @PathVariable("id") Integer id) {
+    public R updateBannerImg(@RequestParam("file") MultipartFile file, @PathVariable("id") int id) {
         return bannerService.updateBannerImg(file, id);
     }
 }

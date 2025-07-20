@@ -9,7 +9,9 @@ public class Constants {
     public static String SONG_PIC_PATH = "file:" + ASSETS_PATH + "/img/songPic/";
     public static String SONG_PATH = "file:" + ASSETS_PATH + "/song/";
     public static String SINGER_PIC_PATH = "file:" + ASSETS_PATH + "/img/singerPic/";
-    public static String BANNER_PIC_PATH = "file:" + ASSETS_PATH + "/img/swiper/";
+    public static String BANNER_PIC_PATH = "file:" + ASSETS_PATH + "/img/banner/";
+
+
 
     /* 盐值加密 */
     public static String SALT = "zyt";

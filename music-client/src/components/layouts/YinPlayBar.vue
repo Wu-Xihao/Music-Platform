@@ -9,7 +9,9 @@
       <div class="info-box">
         <!--歌曲图片-->
         <div @click="goPlayerPage">
-          <el-image class="song-bar-img" fit="contain"/>
+          <!-- 添加了src绑定和默认图片处理 -->
+          <el-image class="song-bar-img" :src="songImageUrl" fit="cover">
+          </el-image>
         </div>
         <!--播放开始结束时间-->
         <div v-if="songId">
@@ -156,6 +158,7 @@ export default defineComponent({
         dislike: Icon.Dislike,
         like: Icon.Like,
       },
+      songImageUrl:"https://th.bing.com/th/id/OIP.CFF5Arip7HzRXTSkZAIg0gHaHH?w=173&h=189&c=7&r=0&o=5&dpr=1.7&pid=1.7",
     };
   },
   computed: {
