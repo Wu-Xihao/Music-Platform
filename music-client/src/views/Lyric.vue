@@ -242,7 +242,7 @@ const initAudioAnalyser = () => {
     analyser.value.smoothingTimeConstant = 0.8;
 
     // 连接音频源
-    const source = audioContext.value!.createMediaElementSource(audioElement.value);
+    const source = audioContext.value!.createMediaElementSource(audioElement.value as HTMLAudioElement);
     source.connect(analyser.value);
     analyser.value.connect(audioContext.value!.destination);
 
@@ -266,7 +266,6 @@ const initAudioAnalyser = () => {
   }
 };
 
-// 修改为动态正弦波
 const provideFallbackWaveform = () => {
   if (!waveformCanvas.value) return;
 
@@ -299,7 +298,7 @@ const provideFallbackWaveform = () => {
     const w = canvas.width;
     const h = canvas.height;
 
-    time += 0.02; // 增加时间计数器
+    time += 0.05; // 增加时间计数器
 
     ctx.clearRect(0, 0, w, h);
 
@@ -479,45 +478,55 @@ onMounted(() => {
   initParticles();
   animateParticles();
 
-  // 监听音频元素加载完成
-  if (audioElement.value) {
-    const onLoadedData = () => {
-      if (!waveformActivated.value) {
-        waveformMessage.value = '音频加载完成，点击激活波形图';
-        showActivateButton.value = true;
-      }
-    };
+  // 增强的音频元素检查
+  const isHTMLElement = (obj: any): obj is HTMLElement => {
+    return obj && typeof obj.addEventListener === 'function';
+  };
 
-    if (audioElement.value.readyState >= 2) { // HAVE_CURRENT_DATA
-      onLoadedData();
+  const checkAudioAndSetup = () => {
+    if (isHTMLElement(audioElement.value)) {
+      // 有效的 DOM 元素
+      const audioEl = audioElement.value as HTMLAudioElement;
+      const onLoadedData = () => {
+        if (!waveformActivated.value) {
+          waveformMessage.value = '音频加载完成，点击激活波形图';
+          showActivateButton.value = true;
+        }
+      };
+
+      if (audioEl.readyState >= 2) {
+        // HAVE_CURRENT_DATA
+        onLoadedData();
+      } else {
+        audioEl.addEventListener('loadeddata', onLoadedData);
+      }
     } else {
-      audioElement.value.addEventListener('loadeddata', onLoadedData);
+      waveformMessage.value = '无法访问音频元素，将使用模拟波形';
+      provideFallbackWaveform();
     }
-  } else {
-    waveformMessage.value = '音频元素未找到，将使用模拟波形';
-    provideFallbackWaveform();
-  }
+  };
 
   // 尝试自动激活（需要用户交互）
   const tryAutoActivate = () => {
-    if (!waveformActivated.value && audioElement.value && audioElement.value.readyState >= 2) {
-      activateWaveform();
+    if (!waveformActivated.value) {
+      checkAudioAndSetup();
     }
   };
+
+  // 初始检查
+  checkAudioAndSetup();
 
   // 监听用户交互以激活
   document.addEventListener('click', tryAutoActivate, { once: true });
 
-  // 确保Canvas初始尺寸正确
+  // 确保 Canvas 初始尺寸正确
   nextTick(() => {
     if (waveformCanvas.value) {
       const container = waveformCanvas.value.parentElement;
       if (container) {
         const { width, height } = container.getBoundingClientRect();
-        if (width > 0 && height > 0) {
-          waveformCanvas.value.width = width;
-          waveformCanvas.value.height = height;
-        }
+        waveformCanvas.value.width = width;
+        waveformCanvas.value.height = height;
       }
     }
   });

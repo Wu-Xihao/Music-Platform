@@ -251,20 +251,25 @@ export default defineComponent({
       if (url && url !== this.songUrl) {
         const song = this.currentPlayList[this.currentPlayIndex];
 
+        // 安全地停止当前音频
         const currentAudio = this.$store.getters.audioElement;
-        if (currentAudio) {
-          currentAudio.pause();
-          currentAudio.src = '';
+        if (currentAudio && typeof currentAudio.pause === 'function') {
+          try {
+            currentAudio.pause();
+            currentAudio.src = '';
+          } catch (e) {
+            console.warn('停止旧音频失败:', e);
+          }
         }
 
-        // 创建新音频元素并设置跨域属性
-        const audioElement = new Audio();
-        audioElement.crossOrigin = "anonymous"; // 关键：允许跨域访问
+        // 创建新音频元素
+        const audioElement = new Audio(url);
         audioElement.preload = "auto";
-        audioElement.src = url;
 
+        // 存储到 Vuex
         this.$store.commit("setAudioElement", audioElement);
 
+        // 然后播放音乐
         this.playMusic({
           id: song.id,
           url,
