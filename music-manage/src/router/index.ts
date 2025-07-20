@@ -43,8 +43,8 @@ const routes: Array<RouteRecordRaw> = [
       },
       {
         path: '/Collect',
-        component: () => import('@/views/CollectPage.vue'),
-        meta: { title: 'Collect' }
+        component: () => import('@/views/AllCollectsPage.vue'),
+        meta: { title: 'Collects' }
       },
       {
         path: '/AllSongs',
