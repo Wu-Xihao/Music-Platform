@@ -89,7 +89,9 @@ export default defineComponent({
     });
 
     async function handleLoginCancel() {
-      router.push({ name: RouterName.SignIn });
+      // 修复路由跳转问题
+      // 使用路径跳转而不是命名路由
+      router.push('/sign-in');
     }
 
     async function handleLoginIn() {
@@ -132,8 +134,8 @@ export default defineComponent({
             type: 'success',
           });
 
-          // 导航到首页
-          router.push({ name: RouterName.Home });
+          // 导航到首页 - 使用路径跳转确保可靠性
+          router.push('/');
         } else {
           // 显示错误消息
           ElMessage({
@@ -142,11 +144,11 @@ export default defineComponent({
           });
         }
       } catch (error) {
-        /*console.error("登录请求失败:", error);
+        console.error("登录请求失败:", error);
         ElMessage({
           message: '登录请求失败，请重试',
           type: 'error',
-        });*/
+        });
       } finally {
         // 隐藏加载状态
         loginLoading.value = false;
