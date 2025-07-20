@@ -5,36 +5,36 @@
         background-color="transparent"
         text-color="#334155"
         active-text-color="#1e40af"
-        default-active="info"
+        :default-active="activeIndex"
         router
         :collapse="collapse"
         :collapse-transition="false"
     >
-      <el-menu-item index="info">
+      <el-menu-item index="/info">
         <el-icon class="menu-icon"><PieChart /></el-icon>
         <span class="menu-text">系统首页</span>
       </el-menu-item>
-      <el-menu-item index="consumer">
+      <el-menu-item index="/consumer">
         <el-icon class="menu-icon"><User /></el-icon>
         <span class="menu-text">用户管理</span>
       </el-menu-item>
-      <el-menu-item index="singer">
+      <el-menu-item index="/singer">
         <el-icon class="menu-icon"><Mic /></el-icon>
         <span class="menu-text">歌手管理</span>
       </el-menu-item>
-      <el-menu-item index="songList">
+      <el-menu-item index="/songList">
         <el-icon class="menu-icon"><Document /></el-icon>
         <span class="menu-text">歌单管理</span>
       </el-menu-item>
-      <el-menu-item index="AllSongs">
+      <el-menu-item index="/AllSongs">
         <el-icon class="menu-icon"><Headset /></el-icon>
         <span class="menu-text">歌曲管理</span>
       </el-menu-item>
-      <el-menu-item index="Collect">
+      <el-menu-item index="/Collect">
         <el-icon class="menu-icon"><Star /></el-icon>
         <span class="menu-text">收藏管理</span>
       </el-menu-item>
-      <el-menu-item index="Banner">
+      <el-menu-item index="/Banner">
         <el-icon class="menu-icon"><Star /></el-icon>
         <span class="menu-text">轮播图管理</span>
       </el-menu-item>
@@ -43,15 +43,22 @@
 </template>
 
 <script lang="ts" setup>
-import { ref, onMounted, onBeforeUnmount } from "vue";
+import {ref, onMounted, onBeforeUnmount, computed} from "vue";
 import { PieChart, Mic, Document, User, Headset, Star } from "@element-plus/icons-vue";
 import emitter from "@/utils/emitter";
+import {useRoute} from "vue-router";
 
 const collapse = ref(false);
 
 const handleCollapse = (msg: boolean) => {
   collapse.value = msg;
 };
+
+const route = useRoute();
+// 计算当前激活菜单项
+const activeIndex = computed(() => {
+  return route.path;
+});
 
 onMounted(() => {
   emitter.on("collapse", handleCollapse);
