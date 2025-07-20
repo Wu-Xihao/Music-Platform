@@ -55,169 +55,239 @@
   </el-row>
   <el-row :gutter="20">
     <el-col :span="12">
-      <h3>用户性别比例</h3>
+      <h3></h3>
       <el-card class="cav-info" shadow="hover" :body-style="{ padding: '0px' }" id="userSex"></el-card>
     </el-col>
     <el-col :span="12">
-      <h3>歌曲类型</h3>
+      <h3></h3>
       <el-card class="cav-info" shadow="hover" :body-style="{ padding: '0px' }" id="songStyle"></el-card>
     </el-col>
   </el-row>
   <el-row :gutter="20">
     <el-col :span="12">
-      <h3>歌手性别比例</h3>
+      <h3></h3>
       <el-card class="cav-info" shadow="hover" :body-style="{ padding: '0px' }" id="singerSex"></el-card>
     </el-col>
     <el-col :span="12">
-      <h3>歌手国籍</h3>
+      <h3></h3>
       <el-card class="cav-info" shadow="hover" :body-style="{ padding: '0px' }" id="country"></el-card>
     </el-col>
   </el-row>
 </template>
 <script lang="ts" setup>
-// import { ref, reactive, getCurrentInstance } from "vue";
-import { ref, reactive } from "vue";
+import { ref, reactive, onMounted } from "vue";
 import * as echarts from "echarts";
 import { Mic, Document, User, Headset } from "@element-plus/icons-vue";
 import { HttpManager } from "@/api/index";
 
-// const { proxy } = getCurrentInstance();
+// 数量统计
 const userCount = ref(0);
 const songCount = ref(0);
 const singerCount = ref(0);
 const songListCount = ref(0);
-const userSex = reactive({
-  series: [
-    {
-      type: "pie",
-      data: [
-        {
-          value: 0,
-          name: "男",
-        },
-        {
-          value: 0,
-          name: "女",
-        },
-      ],
-    },
-  ],
-});
-const songStyle = reactive({
-  xAxis: {
-    type: "category",
-    data: ["华语", "粤语", "欧美", "日韩", "BGM", "轻音乐", "乐器"],
+
+// 饼图渐变色配置（男蓝 女粉）
+const pieColorMap = {
+  0: {
+    name: "男",
+    color: {
+      type: "linear",
+      x: 0, y: 0, x2: 1, y2: 1,
+      colorStops: [
+        { offset: 0, color: "#409EFF" },
+        { offset: 1, color: "#66b1ff" }
+      ]
+    }
   },
-  yAxis: {
-    type: "value",
-  },
-  series: [
-    {
-      data: [0, 0, 0, 0, 0, 0, 0],
-      type: "bar",
-      barWidth: "20%",
+  1: {
+    name: "女",
+    color: {
+      type: "linear",
+      x: 0, y: 0, x2: 1, y2: 1,
+      colorStops: [
+        { offset: 0, color: "#FF69B4" },
+        { offset: 1, color: "#FFB6C1" }
+      ]
+    }
+  }
+};
+
+// 饼图基础配置
+function createPieOption(title = "") {
+  return {
+    title: {
+      text: title,
+      left: "center",
+      top: 10,
+      textStyle: { fontSize: 16 },
     },
-  ],
-});
-const singerSex = reactive({
-  series: [
-    {
-      type: "pie",
-      data: [
-        {
-          value: 0,
-          name: "男",
-        },
-        {
-          value: 0,
-          name: "女",
-        },
-      ],
+    tooltip: {
+      trigger: "item",
+      formatter: "{b}: {c} ({d}%)",
     },
-  ],
-});
-const country = reactive({
-  xAxis: {
-    type: "category",
-    data: [
-      "中国",
-      "韩国",
-      "意大利",
-      "新加坡",
-      "美国",
-      // "马来西亚",
-      "西班牙",
-      "日本",
+    legend: {
+      orient: "vertical",
+      left: "left",
+      textStyle: { fontSize: 14 },
+    },
+    series: [
+      {
+        type: "pie",
+        radius: ["40%", "70%"],
+        avoidLabelOverlap: false,
+        label: {
+          show: true,
+          formatter: "{b}\n{d}%",
+          fontSize: 14,
+        },
+        labelLine: { show: true },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: "rgba(0, 0, 0, 0.3)",
+          },
+        },
+        data: [],
+      },
     ],
-  },
-  yAxis: {
-    type: "value",
-  },
-  series: [
-    {
-      data: [0, 0, 0, 0, 0, 0, 0, 0],
-      type: "bar",
-      barWidth: "20%",
-    },
-  ],
-});
-
-function setSex(sex, arr) {
-  let value = 0;
-  const name = sex === 0 ? "男" : "女";
-  for (let item of arr) {
-    if (sex === item.sex) {
-      value++;
-    }
-  }
-  return { value, name };
+  };
 }
-HttpManager.getAllUser().then((res) => {
-  const result = res as ResponseBody;
-  userCount.value = result.data.length;
-  userSex.series[0].data.push(setSex(0, result.data));
-  userSex.series[0].data.push(setSex(1, result.data));
 
-  // const userSexChart = echarts.init(proxy.$refs.userSex);
-  const userSexChart = echarts.init(document.getElementById("userSex"));
-  userSexChart.setOption(userSex);
-});
+// 柱状图基础配置
+function createBarOption(categories: string[], title = "") {
+  return {
+    title: {
+      text: title,
+      left: "center",
+      top: 10,
+      textStyle: { fontSize: 16 },
+    },
+    tooltip: {
+      trigger: "axis",
+      axisPointer: { type: "shadow" },
+    },
+    grid: {
+      left: "3%",
+      right: "4%",
+      bottom: "3%",
+      containLabel: true,
+    },
+    xAxis: {
+      type: "category",
+      data: categories,
+      axisLabel: {
+        rotate: 30,
+        fontSize: 12,
+      },
+      axisLine: { show: false },
+      axisTick: { show: false },
+    },
+    yAxis: {
+      type: "value",
+      splitLine: {
+        lineStyle: { type: "dashed" },
+      },
+    },
+    series: [
+      {
+        name: "数量",
+        data: new Array(categories.length).fill(0),
+        type: "bar",
+        barWidth: "35%",
+        itemStyle: {
+          color: "#409EFF",
+          borderRadius: [6, 6, 0, 0],
+        },
+        emphasis: {
+          itemStyle: {
+            shadowBlur: 10,
+            shadowColor: "rgba(0, 0, 0, 0.3)",
+          },
+        },
+      },
+    ],
+  };
+}
 
-HttpManager.getAllSong().then((res) => {
-  songCount.value = (res as ResponseBody).data.length;
-});
-HttpManager.getSongList().then((res) => {
-  const result = res as ResponseBody;
-  songListCount.value = result.data.length;
-  for (let item of result.data) {
-    for (let i = 0; i < songStyle.xAxis.data.length; i++) {
-      if (item.style.includes(songStyle.xAxis.data[i])) {
-        songStyle.series[0].data[i]++;
-      }
-    }
+// 图表配置对象
+const userSex = reactive(createPieOption("用户性别比例"));
+const singerSex = reactive(createPieOption("歌手性别比例"));
+const songStyle = reactive(createBarOption(["华语", "粤语", "欧美", "日韩", "BGM", "轻音乐", "乐器"], "歌曲类型"));
+const country = reactive(createBarOption(["中国", "韩国", "意大利", "新加坡", "美国", "西班牙", "日本"], "歌手国籍"));
+
+// 设置饼图数据（附带渐变色）
+function setSexWithColor(sex: number, arr: any[]) {
+  const base = pieColorMap[sex];
+  return {
+    value: arr.filter((item) => item.sex === sex).length,
+    name: base.name,
+    itemStyle: {
+      color: base.color,
+    },
+  };
+}
+
+// 渲染图表
+function renderChart(id: string, option: any) {
+  const el = document.getElementById(id);
+  if (el) {
+    const chart = echarts.init(el);
+    chart.setOption(option, true);
   }
-  // const songStyleChart = echarts.init(proxy.$refs.songStyle);
-  const songStyleChart = echarts.init(document.getElementById("songStyle"));
-  songStyleChart.setOption(songStyle);
-});
+}
 
-HttpManager.getAllSinger().then((res) => {
-  const result = res as ResponseBody;
-  singerCount.value = result.data.length;
-  singerSex.series[0].data.push(setSex(0, result.data));
-  singerSex.series[0].data.push(setSex(1, result.data));
-  const singerSexChart = echarts.init(document.getElementById("singerSex"));
-  singerSexChart.setOption(singerSex);
+// 数据加载并渲染图表
+onMounted(() => {
+  HttpManager.getAllUser().then((res) => {
+    const result = res as ResponseBody;
+    const data = result.data;
+    userCount.value = data.length;
 
-  for (let item of result.data) {
-    for (let i = 0; i < country.xAxis.data.length; i++) {
-      if (item.location.includes(country.xAxis.data[i])) {
-        country.series[0].data[i]++;
-      }
+    userSex.series[0].data = [
+      setSexWithColor(0, data),
+      setSexWithColor(1, data),
+    ];
+    renderChart("userSex", userSex);
+  });
+
+  HttpManager.getAllSong().then((res) => {
+    const data = (res as ResponseBody).data;
+    songCount.value = data.length;
+  });
+
+  HttpManager.getSongList().then((res) => {
+    const data = (res as ResponseBody).data;
+    songListCount.value = data.length;
+
+    for (let item of data) {
+      songStyle.xAxis.data.forEach((style, i) => {
+        if (item.style.includes(style)) {
+          songStyle.series[0].data[i]++;
+        }
+      });
     }
-  }
-  const countryChart = echarts.init(document.getElementById("country"));
-  countryChart.setOption(country);
+    renderChart("songStyle", songStyle);
+  });
+
+  HttpManager.getAllSinger().then((res) => {
+    const data = (res as ResponseBody).data;
+    singerCount.value = data.length;
+
+    singerSex.series[0].data = [
+      setSexWithColor(0, data),
+      setSexWithColor(1, data),
+    ];
+    renderChart("singerSex", singerSex);
+
+    for (let item of data) {
+      country.xAxis.data.forEach((nation, i) => {
+        if (item.location.includes(nation)) {
+          country.series[0].data[i]++;
+        }
+      });
+    }
+    renderChart("country", country);
+  });
 });
 </script>
 
