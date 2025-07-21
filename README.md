@@ -1,5 +1,71 @@
 # Music-Platform
 
+## 项目功能
+
+- 音乐播放
+- 用户登录注册
+- 用户信息编辑、头像修改
+- 歌曲、歌单搜索
+- 歌单打分
+- 歌单、歌曲评论
+- 歌单列表、歌手列表分页显示
+- 歌词同步显示
+- 音乐收藏、下载、播放、音量控制
+- 后台对用户、歌曲、歌手、歌单、收藏、轮播图信息的管理
+
+### 后端
+
+**SpringBoot + MyBatis + Redis** **+ minio**
+### 前端
+
+**Vue3.0 + TypeScript + Vue-Router + Vuex + Axios + ElementPlus + Echarts**
+
+## 开发环境
+
+JDK： jdk-8u141
+
+mysql：mysql-8.0.35
+
+redis：5.0.14
+
+node：18.19.0
+
+IDE：IntelliJ IDEA 2023、VSCode
+
+minio: RELEASE.2025-05-24T17-08-30Z
+
+## 运行配置
+
+### 1.Redis运行命令
+```shell
+redis-server.exe
+```
+
+### 2. minio运行命令
+```shell
+E:
+cd E:\ProgramFiles\minio\bin
+set MINIO_ROOT_USER=minioadmin
+set MINIO_ROOT_PASSWORD=minioadmin
+.\minio.exe server E:\ProgramFiles\minio\data --address ":9005" --console-address ":9000"
+```
+
+### 3. music-client运行命令
+```shell
+npm install
+npm run server
+```
+
+### 4. music-manage运行命令
+```shell
+npm install
+npm run server
+```
+
+### 4. spring-boot后端运行
+直接运行YinMusicApplication即可。
+
+
 ## 数据库
 
 ### 1. 管理员表（`admin`）
@@ -10,8 +76,6 @@
 | name     | VARCHAR(255)     | 管理员用户名（唯一） |
 | password | VARCHAR(45)      | 登录密码             |
 
-
-
 ------
 
 ### 2. 轮播图表（`banner`）
@@ -20,8 +84,6 @@
 | ------ | ---------------- | -------------- |
 | id     | INT (主键, 自增) | 轮播图唯一标识 |
 | pic    | VARCHAR(255)     | 图片 URL 路径  |
-
-
 
 ------
 
@@ -35,8 +97,6 @@
 | song_id      | INT (可空)       | 收藏的歌曲 ID              |
 | song_list_id | INT (可空)       | 收藏的歌单 ID              |
 | create_time  | DATETIME         | 收藏时间                   |
-
-
 
 ------
 
@@ -53,9 +113,7 @@
 | type         | TINYINT          | 类型（0=歌曲，1=歌单） |
 | up           | INT (默认 0)     | 点赞数                 |
 
-
-
-------
+-----
 
 ### 5. 用户表（`consumer`）
 
@@ -74,8 +132,6 @@
 | create_time  | DATETIME         | 注册时间           |
 | update_time  | DATETIME         | 最后更新时间       |
 
-
-
 ------
 
 ### 6. 歌单-歌曲关联表（`list_song`）
@@ -85,8 +141,6 @@
 | id           | INT (主键, 自增) | 关系唯一标识 |
 | song_id      | INT              | 歌曲 ID      |
 | song_list_id | INT              | 歌单 ID      |
-
-
 
 ------
 
@@ -99,9 +153,6 @@
 | consumer_id  | BIGINT              | 用户 ID                     |
 | score        | INT (0-10)          | 评分值                      |
 | 唯一约束     |                     | (consumer_id, song_list_id) |
-
-
-
 ------
 
 ### 8. 歌手表（`singer`）
@@ -115,8 +166,6 @@
 | birth        | DATETIME         | 出生日期           |
 | location     | VARCHAR(45)      | 地区               |
 | introduction | VARCHAR(255)     | 歌手简介           |
-
-
 
 ------
 
@@ -134,8 +183,6 @@
 | lyric        | TEXT             | 歌词全文     |
 | url          | VARCHAR(255)     | 歌曲文件路径 |
 
-
-
 ------
 
 ### 10. 歌单表（`song_list`）
@@ -148,8 +195,6 @@
 | introduction | TEXT             | 歌单描述              |
 | style        | VARCHAR(10)      | 风格标签（默认 "无"） |
 
-
-
 ------
 
 ### 11. 评论点赞表（`user_support`）
@@ -159,21 +204,3 @@
 | id         | INT (主键, 自增) | 点赞记录标识 |
 | comment_id | INT              | 评论 ID      |
 | user_id    | VARCHAR(45)      | 用户 ID      |
-
-
-## 运行配置
-
-### 1.Redis运行命令
-```shell
-redis-server.exe
-```
-
-### 2. minio运行命令
-```shell
-E:
-cd E:\ProgramFiles\minio\bin
-set MINIO_ROOT_USER=minioadmin
-set MINIO_ROOT_PASSWORD=minioadmin
-.\minio.exe server E:\ProgramFiles\minio\data --address ":9005" --console-address ":9000"
-```
-
