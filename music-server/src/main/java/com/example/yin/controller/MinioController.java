@@ -28,7 +28,6 @@ public class MinioController {
                     .object(fileName)
                     .build();
             InputStream inputStream = minioClient.getObject(args);
-
             // 将文件内容读取为字节数组
             byte[] bytes = IOUtils.toByteArray(inputStream);
 
@@ -79,7 +78,6 @@ public class MinioController {
         return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
     //获取歌的图片
-    ///music/singer/song/98329722.jfif
     @GetMapping("/music/singer/song/{fileName:.+}")
     public ResponseEntity<byte[]> getImage2(@PathVariable String fileName) throws Exception {
         InputStream stream = minioClient.getObject(
@@ -96,8 +94,6 @@ public class MinioController {
 
         return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
-    //获取头像
-    ///img/avatorImages/
     @GetMapping("/img/avatorImages/{fileName:.+}")
     public ResponseEntity<byte[]> getImage3(@PathVariable String fileName) throws Exception {
         InputStream stream = minioClient.getObject(
@@ -114,7 +110,6 @@ public class MinioController {
 
         return new ResponseEntity<>(bytes, headers, HttpStatus.OK);
     }
-
     @GetMapping("music/img/banner/{fileName:.+}")
     public ResponseEntity<byte[]> getImage4(@PathVariable String fileName) throws Exception {
         InputStream stream = minioClient.getObject(
