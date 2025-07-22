@@ -53,13 +53,13 @@ set MINIO_ROOT_PASSWORD=minioadmin
 ### 3. music-client运行命令
 ```shell
 npm install
-npm run server
+npm run serve
 ```
 
 ### 4. music-manage运行命令
 ```shell
 npm install
-npm run server
+npm run serve
 ```
 
 ### 4. spring-boot后端运行
